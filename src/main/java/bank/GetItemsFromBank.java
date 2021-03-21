@@ -65,7 +65,14 @@ public class GetItemsFromBank extends MethodProvider {
                             new TaskItem("Vial of water", 14, true, true),
                             new TaskItem("Guam potion (unf)", 14, true, false),
 
-                    }
+                    },
+                    {
+                            new TaskItem("Raw bear meat", 1, true, true),
+                            new TaskItem("Raw rat meat", 1, true, true),
+                            new TaskItem("Raw beef", 1, true, true),
+                            new TaskItem("Raw chicken", 1, true, true),
+
+                    },
             },
             {
                     {

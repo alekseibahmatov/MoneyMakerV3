@@ -4,6 +4,7 @@ import activities.CraftingLimestoneBricks.GrindingLimestoneBricks;
 import activities.FillingBullseyeLantern.PlayerHasHouse;
 import activities.FillingBullseyeLantern.PlayerNoHouse;
 import activities.GrindingDesertGoatHorns.GrindingDesertGoatHorns;
+import activities.MakingGuamPotions.DruidicRitual;
 import activities.MakingGuamPotions.MakingGuamPotions;
 import activities.MakingTarrominPotions.HerbloreBelow12Lvl;
 import activities.MakingTarrominPotions.MakingTarrominPotions;
@@ -60,12 +61,14 @@ public class main extends Script {
 
     private CollectingPlanks collectingPlanks = new CollectingPlanks();
 
+    private DruidicRitual druidicRitual = new DruidicRitual();
     private MakingGuamPotions guamPotions = new MakingGuamPotions();
 
     private HerbloreBelow12Lvl herbloreBelow12Lvl = new HerbloreBelow12Lvl();
     private MakingTarrominPotions tarrominPotions = new MakingTarrominPotions();
 
     private SpinningFlax spinningFlax = new SpinningFlax();
+
 
     // Utilities initialization
 
@@ -117,6 +120,7 @@ public class main extends Script {
         hasHouse.exchangeContext(getBot());
         noHouse.exchangeContext(getBot());
         collectingPlanks.exchangeContext(getBot());
+        druidicRitual.exchangeContext(getBot());
         guamPotions.exchangeContext(getBot());
         herbloreBelow12Lvl.exchangeContext(getBot());
         tarrominPotions.exchangeContext(getBot());
@@ -167,11 +171,11 @@ public class main extends Script {
     @Override
     public int onLoop() throws InterruptedException {
 
-        if(!isBreaking) {
+        if (!isBreaking) {
             if (taskID == -1) selectTask();
 
-            if(firstLoop) {
-                if(tasks.get(taskID).isNeededToStartAtGE()) goToGrandExchange();
+            if (firstLoop) {
+                if (tasks.get(taskID).isNeededToStartAtGE()) goToGrandExchange();
                 firstLoop = false;
             } else {
                 switch (taskID) {
@@ -225,7 +229,7 @@ public class main extends Script {
                                 taskParam = 0;
                             }
                         } else {
-                            if(noHouse.validate()) noHouse.execute(taskParam);
+                            if (noHouse.validate()) noHouse.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 4;
@@ -289,23 +293,32 @@ public class main extends Script {
                         }
                         break;
                     case 6:
-                        if(guamPotions.validate()) guamPotions.execute(taskParam);
-                        else {
-                            taskID = -2;
-                            prevTaskID = 6;
-                            taskParam = 0;
+                        if (getSkills().getDynamic(Skill.HERBLORE) >= 3) {
+                            if (guamPotions.validate()) guamPotions.execute(taskParam);
+                            else {
+                                taskID = -2;
+                                prevTaskID = 6;
+                                taskParam = 0;
+                            }
+                        } else {
+                            if (druidicRitual.validate()) druidicRitual.execute(taskParam);
+                            else {
+                                taskID = -2;
+                                prevTaskID = 6;
+                                taskParam = 1;
+                            }
                         }
                         break;
                     case 7:
                         if (getSkills().getDynamic(Skill.HERBLORE) >= 12) {
-                            if(tarrominPotions.validate()) tarrominPotions.execute(taskParam);
+                            if (tarrominPotions.validate()) tarrominPotions.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
                                 taskParam = 0;
                             }
                         } else {
-                            if(herbloreBelow12Lvl.validate()) herbloreBelow12Lvl.execute(taskParam);
+                            if (herbloreBelow12Lvl.validate()) herbloreBelow12Lvl.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
@@ -386,8 +399,7 @@ public class main extends Script {
         if (!isBreaking) {
             g.drawString(String.format("Runtime: %s", formatTime(runTime)), 35, 340);
             g.drawString(String.format("Time until next break: %s", formatTime(timeUntilBreak)), 35, 300);
-        }
-        else g.drawString(String.format("Breaking: %s", formatTime(breakTime)), 35, 340);
+        } else g.drawString(String.format("Breaking: %s", formatTime(breakTime)), 35, 340);
     }
 
     public void solver() {
@@ -397,7 +409,7 @@ public class main extends Script {
     }
 
     private void goToGrandExchange() {
-        if(!Banks.GRAND_EXCHANGE.contains(myPosition())) {
+        if (!Banks.GRAND_EXCHANGE.contains(myPosition())) {
             bankManager.openBank();
 
             String ringOfWealth[] = "Ring of wealth (1),Ring of wealth (2),Ring of wealth (3),Ring of wealth (4),Ring of wealth (5)".split(",");
@@ -405,7 +417,7 @@ public class main extends Script {
             boolean isTeleportExists = false;
 
             for (String ring : ringOfWealth) {
-                if(getInventory().contains(ring)) {
+                if (getInventory().contains(ring)) {
                     getBank().close();
 
                     getInventory().getItem(ring).interact("Rub");
@@ -419,8 +431,7 @@ public class main extends Script {
                     isTeleportExists = true;
 
                     break;
-                }
-                else if(getBank().contains(ring)) {
+                } else if (getBank().contains(ring)) {
                     getBank().withdraw(ring, 1);
 
                     getBank().close();
@@ -442,7 +453,7 @@ public class main extends Script {
             if (!isTeleportExists) {
                 Area GE = new Area(3169, 3488, 3161, 3486);
 
-                while(GE.contains(myPosition())) getWalking().webWalk(GE);
+                while (GE.contains(myPosition())) getWalking().webWalk(GE);
             }
         }
     }
@@ -462,14 +473,14 @@ public class main extends Script {
 
             cal.add(Calendar.DAY_OF_MONTH, offset);
 
-            int random = random(-60, 60);
-            cal.add(Calendar.MINUTE, random);
+//            int random = random(-60, 60);
+//            cal.add(Calendar.MINUTE, random);
 
             int rand = random(4, 6);
 
             try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
                 for (int i = 0; i < rand; i++) {
-                    int randTask = random(5, 8); // Task cases
+                    int randTask = random(6, 6); // Task cases
 
                     int param = 0;
 
