@@ -16,7 +16,8 @@ public class BankManager extends MethodProvider {
 
     public void openBank() {
 
-        Area banks[] = {
+        Area[] banks = {
+                Banks.GRAND_EXCHANGE,
                 Banks.LUMBRIDGE_UPPER,
                 Banks.DRAYNOR,
                 Banks.AL_KHARID,
