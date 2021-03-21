@@ -6,7 +6,7 @@ import org.osbot.rs07.api.Inventory;
 import org.osbot.rs07.script.MethodProvider;
 
 public class GetItemsFromBank extends MethodProvider {
-    TaskItem taskItems[][][] = {
+    TaskItem[][][] taskItems = {
             {
                     {
                             new TaskItem("Unicorn horn", 27, true, true),
@@ -63,7 +63,7 @@ public class GetItemsFromBank extends MethodProvider {
                     {
                             new TaskItem("Guam leaf", 14, true, true),
                             new TaskItem("Vial of water", 14, true, true),
-                            new TaskItem("Guam potion (unf)", 14, true, false),
+                            new TaskItem("Guam potion (unf)", true, false),
 
                     },
                     {
@@ -103,7 +103,7 @@ public class GetItemsFromBank extends MethodProvider {
         }
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
-            String splittedItems[] = taskItems[taskID][step][i].getName().split(",");
+            String[] splittedItems = taskItems[taskID][step][i].getName().split(",");
             if(splittedItems.length == 1 && !getBank().contains(taskItems[taskID][step][i].getName()) && !getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeTaken()) return -1;
             else if(splittedItems.length > 1) {
                 boolean hasAtLeastOneOfListedItems = false;
@@ -119,11 +119,11 @@ public class GetItemsFromBank extends MethodProvider {
         }
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
-            String splittedItems[] = taskItems[taskID][step][i].getName().split(",");
-            if(splittedItems.length == 1 && !getInventory().contains(taskItems[taskID][step][i].getName())) getBank().withdraw(taskItems[taskID][step][i].getName(), taskItems[taskID][step][i].getAmount());
+            String[] splittedItems = taskItems[taskID][step][i].getName().split(",");
+            if(splittedItems.length == 1 && !getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeTaken()) getBank().withdraw(taskItems[taskID][step][i].getName(), taskItems[taskID][step][i].getAmount());
             else if(splittedItems.length > 1) {
                 for (String item : splittedItems) {
-                    if(!getInventory().contains(item) && getBank().contains(item)) {
+                    if(!getInventory().contains(item) && getBank().contains(item) && taskItems[taskID][step][i].isNeededToBeTaken()) {
                         getBank().withdraw(item, taskItems[taskID][step][i].getAmount());
                         break;
                     }
