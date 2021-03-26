@@ -44,27 +44,27 @@ public class HouseValidation extends MethodProvider {
         if (Integer.parseInt(getWidgets().get(370, 20).getMessage().split(" ")[3]) > 0) {
             RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
             leaveHouseWidget.interact();
-            new ConditionalSleep(5000, 1000) {
-                @Override
-                public boolean condition() throws InterruptedException {
-                    log("sleep until house widget disappear");
-                    RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
-                    return (leaveHouseWidget == null && !leaveHouseWidget.isVisible());
-                }
-            }.sleep();
+//            new ConditionalSleep(5000, 1000) {
+//                @Override
+//                public boolean condition() throws InterruptedException {
+//                    log("sleep until house widget disappear");
+//                    RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
+//                    return (leaveHouseWidget == null && !leaveHouseWidget.isVisible());
+//                }
+//            }.sleep();
             if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
             return true;
         } else {
             RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
             leaveHouseWidget.interact();
-            new ConditionalSleep(5000, 1000) {
-                @Override
-                public boolean condition() throws InterruptedException {
-                    log("sleep until house widget disappear");
-                    RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
-                    return (leaveHouseWidget == null && !leaveHouseWidget.isVisible());
-                }
-            }.sleep();
+//            new ConditionalSleep(5000, 1000) {
+//                @Override
+//                public boolean condition() throws InterruptedException {
+//                    log("sleep until house widget disappear");
+//                    RS2Widget leaveHouseWidget = getWidgets().get(370, 21);
+//                    return (leaveHouseWidget == null && !leaveHouseWidget.isVisible());
+//                }
+//            }.sleep();
             if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
             return false;
         }

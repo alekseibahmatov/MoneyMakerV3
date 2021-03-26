@@ -2,7 +2,8 @@ package bank;
 
 import bank.utils.BankManager;
 import models.TaskItem;
-import org.osbot.rs07.api.Inventory;
+import org.osbot.rs07.api.ui.EquipmentSlot;
+import org.osbot.rs07.api.ui.Tab;
 import org.osbot.rs07.script.MethodProvider;
 
 public class GetItemsFromBank extends MethodProvider {
@@ -91,6 +92,18 @@ public class GetItemsFromBank extends MethodProvider {
                             new TaskItem("Flax", 28, true, true),
                             new TaskItem("Bow string", 28, true, false),
                     }
+            },
+            {
+                    {
+                            new TaskItem("Mind rune", 500, 15, true, true),
+                            new TaskItem("Water rune", 500, 15, true, true),
+                            new TaskItem("Earth rune", 500, 15, true, true),
+                            new TaskItem("Fire rune", 500, 15, true, true),
+                            new TaskItem("Chaos rune", 500, 15, true, true),
+                            new TaskItem("Tuna", 21, 3, true, true),
+                            new TaskItem("Wooden shield", 1, false, true),
+                            new TaskItem("Staff of air", 1, false, true),
+                    }
             }
     };
 
@@ -99,31 +112,41 @@ public class GetItemsFromBank extends MethodProvider {
         bankManager.openBank();
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
-            if(getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeDeposited()) getBank().depositAll(taskItems[taskID][step][i].getName());
+            if (getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeDeposited())
+                getBank().depositAll(taskItems[taskID][step][i].getName());
         }
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
+            log(String.format("%s : %b", taskItems[taskID][step][i].getName(), getBank().getItem(taskItems[taskID][step][i].getName()).getAmount() < taskItems[taskID][step][i].getMinAmount()));
             String[] splittedItems = taskItems[taskID][step][i].getName().split(",");
-            if(splittedItems.length == 1 && !getBank().contains(taskItems[taskID][step][i].getName()) && !getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeTaken()) return -1;
-            else if(splittedItems.length > 1) {
+            if (splittedItems.length == 1 &&
+                    !(getBank().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].getMinAmount() == -1)&&
+                    !getEquipment().contains(taskItems[taskID][step][i].getName()) &&
+                    !getInventory().contains(taskItems[taskID][step][i].getName()) &&
+                    taskItems[taskID][step][i].isNeededToBeTaken() &&
+                    ((getBank().getItem(taskItems[taskID][step][i].getName()).getAmount() < taskItems[taskID][step][i].getMinAmount()) &&
+                            (taskItems[taskID][step][i].getMinAmount() != -1))
+            ) return -1;
+            else if (splittedItems.length > 1) {
                 boolean hasAtLeastOneOfListedItems = false;
                 for (String item : splittedItems) {
-                    if(getBank().contains(item) || getInventory().contains(item)) {
+                    if (getBank().contains(item) || getInventory().contains(item)) {
                         hasAtLeastOneOfListedItems = true;
                         break;
                     }
                 }
 
-                if(!hasAtLeastOneOfListedItems) return -1;
+                if (!hasAtLeastOneOfListedItems) return -1;
             }
         }
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
             String[] splittedItems = taskItems[taskID][step][i].getName().split(",");
-            if(splittedItems.length == 1 && !getInventory().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].isNeededToBeTaken()) getBank().withdraw(taskItems[taskID][step][i].getName(), taskItems[taskID][step][i].getAmount());
-            else if(splittedItems.length > 1) {
+            if (splittedItems.length == 1 && (!getInventory().contains(taskItems[taskID][step][i].getName()) && !getEquipment().contains(taskItems[taskID][step][i].getName())) && taskItems[taskID][step][i].isNeededToBeTaken())
+                getBank().withdraw(taskItems[taskID][step][i].getName(), taskItems[taskID][step][i].getAmount());
+            else if (splittedItems.length > 1) {
                 for (String item : splittedItems) {
-                    if(!getInventory().contains(item) && getBank().contains(item) && taskItems[taskID][step][i].isNeededToBeTaken()) {
+                    if (!getInventory().contains(item) && getBank().contains(item) && taskItems[taskID][step][i].isNeededToBeTaken()) {
                         getBank().withdraw(item, taskItems[taskID][step][i].getAmount());
                         break;
                     }
