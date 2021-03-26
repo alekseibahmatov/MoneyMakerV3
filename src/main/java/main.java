@@ -11,6 +11,9 @@ import activities.MakingTarrominPotions.MakingTarrominPotions;
 import activities.MakingUltracompost.MakingUltracompost;
 import activities.SpinningFlax.SpinningFlax;
 import activities.UncornHornGrinder.UnicornHornGrinder;
+import activities.WineOfZamorak.TrainingHp;
+import activities.WineOfZamorak.TrainingMagic;
+import activities.WineOfZamorak.WineOfZamorak;
 import activities.setup.Task;
 import bank.GetItemsFromBank;
 import bank.utils.BankManager;
@@ -69,6 +72,10 @@ public class main extends Script {
 
     private SpinningFlax spinningFlax = new SpinningFlax();
 
+    private TrainingMagic trainingMagic = new TrainingMagic();
+    private TrainingHp trainingHp = new TrainingHp();
+    private WineOfZamorak wineOfZamorak = new WineOfZamorak();
+
 
     // Utilities initialization
 
@@ -125,6 +132,9 @@ public class main extends Script {
         herbloreBelow12Lvl.exchangeContext(getBot());
         tarrominPotions.exchangeContext(getBot());
         spinningFlax.exchangeContext(getBot());
+        trainingMagic.exchangeContext(getBot());
+        trainingHp.exchangeContext(getBot());
+        wineOfZamorak.exchangeContext(getBot());
 
         tasks.add(unicornHornGrinder);
         tasks.add(grindingDesertGoatHorns);
@@ -135,6 +145,8 @@ public class main extends Script {
         tasks.add(guamPotions);
         tasks.add(herbloreBelow12Lvl);
         tasks.add(spinningFlax);
+        tasks.add(trainingMagic);
+
 
         // Utilities initialization
 
@@ -343,6 +355,14 @@ public class main extends Script {
                             }
                         }
                         break;
+                    case 9:
+                        if (trainingMagic.validate()) trainingMagic.execute(taskParam);
+                        else {
+                            taskID = -2;
+                            prevTaskID = 9;
+                            taskParam = 0;
+                        }
+                        break;
                     case -3:
                         try {
                             goldAmount = grandExchangeSell.sellItems(2, bankManager, grandExchangeManager);
@@ -480,7 +500,7 @@ public class main extends Script {
 
             try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
                 for (int i = 0; i < rand; i++) {
-                    int randTask = random(6, 6); // Task cases
+                    int randTask = random(9, 9); // Task cases
 
                     int param = 0;
 

@@ -3,11 +3,19 @@ package models;
 public class TaskItem {
     private final String name;
     private final boolean isNeededToBeDeposited, isNeededToBeTaken;
-    private int amount;
+    private int amount, minAmount = -1;
 
     public TaskItem(String name, int amount, boolean isNeededToBeDeposited, boolean isNeededToBeTaken) {
         this.name = name;
         this.amount = amount;
+        this.isNeededToBeDeposited = isNeededToBeDeposited;
+        this.isNeededToBeTaken = isNeededToBeTaken;
+    }
+
+    public TaskItem(String name, int amount, int minAmount, boolean isNeededToBeDeposited, boolean isNeededToBeTaken) {
+        this.name = name;
+        this.amount = amount;
+        this.minAmount = minAmount;
         this.isNeededToBeDeposited = isNeededToBeDeposited;
         this.isNeededToBeTaken = isNeededToBeTaken;
     }
@@ -32,5 +40,9 @@ public class TaskItem {
 
     public int getAmount() {
         return amount;
+    }
+
+    public int getMinAmount() {
+        return minAmount;
     }
 }
