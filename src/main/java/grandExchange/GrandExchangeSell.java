@@ -46,6 +46,10 @@ public class GrandExchangeSell extends MethodProvider {
     private int state = 1;
 
     public long sellItems(int sellType, BankManager bankManager, GrandExchangeManager grandExchangeManager) throws IOException, InterruptedException {
+        currentBoxID = -1;
+
+        state = 1;
+
         List<SellItem> items = null;
 
         long goldAmount;

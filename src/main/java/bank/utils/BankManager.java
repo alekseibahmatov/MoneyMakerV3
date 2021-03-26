@@ -36,14 +36,18 @@ public class BankManager extends MethodProvider {
                 Banks.DUEL_ARENA,
                 Banks.PEST_CONTROL,
                 Banks.CANIFIS,
-                Banks.TZHAAR
+                Banks.TZHAAR,
+                new Area(2536, 3573, 2536, 3573),
         };
 
 
-        if(getWalking().webWalk(banks)) {
-            if(getBank().isOpen()) return;
+        if (getWalking().webWalk(banks)) {
 
-            if(getInventory().isItemSelected()) getInventory().deselectItem();
+            log("FUCK123");
+
+            if (getBank().isOpen()) return;
+
+            if (getInventory().isItemSelected()) getInventory().deselectItem();
 
             Filter<RS2Object> geBoothFilter = rs2Object -> rs2Object.hasAction("Bank");
 
@@ -52,7 +56,7 @@ public class BankManager extends MethodProvider {
 
             int random = new Random().nextInt(10);
             if (geBooth != null && random < 5) {
-                if(!geBooth.isVisible()) getCamera().toEntity(geBooth);
+                if (!geBooth.isVisible()) getCamera().toEntity(geBooth);
                 log("Opening bank through geBooth");
                 geBooth.interact("Bank");
                 new ConditionalSleep(2500, 3000) {
@@ -64,7 +68,7 @@ public class BankManager extends MethodProvider {
             }
 
             if (banker != null && random >= 5) {
-                if(!banker.isVisible()) getCamera().toEntity(banker);
+                if (!banker.isVisible()) getCamera().toEntity(banker);
                 log("Opening bank through banker");
                 banker.interact("Bank");
                 new ConditionalSleep(2500, 3000) {
@@ -75,7 +79,7 @@ public class BankManager extends MethodProvider {
                 }.sleep();
             }
             try {
-                if(!getBank().open()) openBank();
+                if (!getBank().open()) openBank();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

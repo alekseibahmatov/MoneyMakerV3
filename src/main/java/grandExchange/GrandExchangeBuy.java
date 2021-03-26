@@ -47,24 +47,27 @@ public class GrandExchangeBuy extends MethodProvider {
     private int state = 1;
 
     public long buyItems(int taskID, int step, BankManager bankManager, GrandExchangeManager grandExchangeManager) throws IOException, InterruptedException {
+        currentBoxID = -1;
+
+        state = 1;
 
         long goldAmount;
 
         List<BuyItem> items = null;
 
-        while(true) {
+        while (true) {
             if (!grandExchangeArea.contains(myPosition())) getWalking().webWalk(grandExchangeArea);
             else {
                 List<GrandExchangeBoxState> grandExchangeBoxStates = new ArrayList<>();
 
                 currentBoxID = -1;
 
-                if(state > 2) {
+                if (state > 2) {
                     log("Analyzing grand exchange");
                     for (int i = 0; i < 8; i++) {
                         String status = getGrandExchange().getStatus(boxes[i]).toString();
 
-                        if(status.equals("PENDING_BUY") || status.equals("COMPLETING_BUY") || status.equals("FINISHED_BUY")) {
+                        if (status.equals("PENDING_BUY") || status.equals("COMPLETING_BUY") || status.equals("FINISHED_BUY")) {
                             GrandExchangeBoxState newState = new GrandExchangeBoxState();
 
                             newState.setStatus(status);
@@ -76,15 +79,15 @@ public class GrandExchangeBuy extends MethodProvider {
                     }
                 }
 
-                if(state == 1) {
+                if (state == 1) {
                     log("Getting coins from bank");
                     bankManager.openBank();
 
-                    if(!getInventory().isEmpty()) getBank().depositAll();
+                    if (!getInventory().isEmpty()) getBank().depositAll();
 
                     items = getBuyItems.getItems(taskID, step, getBank());
 
-                    if(getBank().contains("Coins")) {
+                    if (getBank().contains("Coins")) {
 
                         log("Bank has coins");
 
@@ -98,7 +101,7 @@ public class GrandExchangeBuy extends MethodProvider {
 
                         log("Total coins needed: " + goldTotalNeeded);
 
-                        if(goldAvailable < goldTotalNeeded * 1.1) return -1; // Not enough money
+                        if (goldAvailable < goldTotalNeeded * 1.1) return -1; // Not enough money
                         else {
 
                             log("Bank has enough coins");
@@ -116,9 +119,7 @@ public class GrandExchangeBuy extends MethodProvider {
                     } else {
                         return -2; // Your bank account does not have money at all
                     }
-                }
-
-                else if(state == 2) {
+                } else if (state == 2) {
                     log("Buying items");
 
                     grandExchangeManager.openGE();
@@ -132,30 +133,26 @@ public class GrandExchangeBuy extends MethodProvider {
                     }
 
                     state = 3;
-                }
-
-                else if(state == 3) {
+                } else if (state == 3) {
                     log("Checking item count");
                     checkBoxes(grandExchangeBoxStates);
 
-                    if(items.size() != 0 && currentBoxID != -1) {
+                    if (items.size() != 0 && currentBoxID != -1) {
                         log("Items exists");
                         log(getGrandExchange().getStatus(boxes[currentBoxID]).toString());
                         Sleep.sleepUntil(() -> getGrandExchange().getStatus(boxes[currentBoxID]) == GrandExchange.Status.FINISHED_BUY, random(10000, 25000), 500);
                     } else state = 6;
-                }
-
-                else if(state == 4) {
+                } else if (state == 4) {
                     log("Checking state 4");
                     checkBoxes(grandExchangeBoxStates);
-                    if(state == 4) {
+                    if (state == 4) {
 
                         log("Checking state 4 is done");
 
                         int index = 0;
 
-                        for(int j = 0; j < items.size(); j++) {
-                            if(getGrandExchange().getItemId(boxes[currentBoxID]) == items.get(j).getId()) {
+                        for (int j = 0; j < items.size(); j++) {
+                            if (getGrandExchange().getItemId(boxes[currentBoxID]) == items.get(j).getId()) {
                                 index = j;
                                 break;
                             }
@@ -212,9 +209,7 @@ public class GrandExchangeBuy extends MethodProvider {
 
                         state = 3;
                     }
-                }
-
-                else if (state == 5) {
+                } else if (state == 5) {
 
                     log("State 5");
 
@@ -226,13 +221,13 @@ public class GrandExchangeBuy extends MethodProvider {
 
                     int itemID = 0;
 
-                    for(int i = 0; i < items.size(); i++) {
+                    for (int i = 0; i < items.size(); i++) {
 
                         for (GrandExchangeBoxState boxState : grandExchangeBoxStates) {
-                            if(boxState.getSlot() == currentBoxID) itemID = boxState.getItemID();
+                            if (boxState.getSlot() == currentBoxID) itemID = boxState.getItemID();
                         }
 
-                        if(itemID == items.get(i).getId()) {
+                        if (itemID == items.get(i).getId()) {
                             log("Item bought, deleting");
                             items.remove(i);
                         }
@@ -241,14 +236,12 @@ public class GrandExchangeBuy extends MethodProvider {
                     log("going to state 3");
 
                     state = 3;
-                }
-
-                else if(state == 6) {
+                } else if (state == 6) {
 
                     log("State 6");
                     log("Closing GE if open");
 
-                    if(getGrandExchange().isOpen()) getGrandExchange().close();
+                    if (getGrandExchange().isOpen()) getGrandExchange().close();
 
                     log("Opening bank and depositing all");
 
@@ -269,11 +262,10 @@ public class GrandExchangeBuy extends MethodProvider {
 
     private void checkBoxes(List<GrandExchangeBoxState> grandExchangeBoxStates) {
         for (GrandExchangeBoxState boxState : grandExchangeBoxStates) {
-            if(boxState.getStatus().equals("PENDING_BUY") || boxState.getStatus().equals("COMPLETING_BUY")) {
+            if (boxState.getStatus().equals("PENDING_BUY") || boxState.getStatus().equals("COMPLETING_BUY")) {
                 state = 4;
                 currentBoxID = boxState.getSlot();
-            }
-            else if(boxState.getStatus().equals("FINISHED_BUY")) {
+            } else if (boxState.getStatus().equals("FINISHED_BUY")) {
                 state = 5;
                 currentBoxID = boxState.getSlot();
             }
