@@ -117,7 +117,7 @@ public class GetItemsFromBank extends MethodProvider {
         }
 
         for (int i = 0; i < taskItems[taskID][step].length; i++) {
-            log(String.format("%s : %b", taskItems[taskID][step][i].getName(), getBank().getItem(taskItems[taskID][step][i].getName()).getAmount() < taskItems[taskID][step][i].getMinAmount()));
+            //log(String.format("%s : %b", taskItems[taskID][step][i].getName(), getBank().getItem(taskItems[taskID][step][i].getName()).getAmount() < taskItems[taskID][step][i].getMinAmount()));
             String[] splittedItems = taskItems[taskID][step][i].getName().split(",");
             if (splittedItems.length == 1 &&
                     !(getBank().contains(taskItems[taskID][step][i].getName()) && taskItems[taskID][step][i].getMinAmount() == -1)&&
