@@ -9,12 +9,13 @@ import utils.Sleep;
 public class MakingUltracompost extends Task {
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis ultra govno compost");
 
         return getInventory().contains("Supercompost") && getInventory().contains("Volcanic ash");
     }
@@ -24,47 +25,36 @@ public class MakingUltracompost extends Task {
 
         if (getBank().isOpen()) getBank().close();
         else if (getGrandExchange().isOpen()) getGrandExchange().close();
-        log("bank checked");
-
-        new ConditionalSleep(60000, 250) {
-            @Override
-            public boolean condition() throws InterruptedException {
-                return !getBank().isOpen();
-            }
-        }.sleep();
 
         log("bank closed");
 
         if (getInventory().contains("Supercompost")) getInventory().getItem("Supercompost").interact();
         Sleep.sleepUntil(random(300, 500));
         if (getInventory().contains("Volcanic ash")) getInventory().getItem("Volcanic ash").interact();
-        Sleep.sleepUntil(random(300, 500));
-        log("interaction between Supercompost and Volcanic ash");
 
         new ConditionalSleep(60000, 1000) {
             @Override
             public boolean condition() {
                 RS2Widget compostWidget = getWidgets().get(270, 14);
-                return (compostWidget != null && compostWidget.isVisible());
+                if (compostWidget != null && compostWidget.isVisible()) {
+                    compostWidget.interact();
+                    return true;
+                }
+                return false;
             }
         }.sleep();
-        log("compostWidget registered");
+        log("interaction between supercompost and volcanic ash");
 
-        RS2Widget compostWidget = getWidgets().get(270, 14);
-
-        if (compostWidget != null && compostWidget.isVisible()) {
-            compostWidget.interact();
-        }
-        log("started interactions");
-        Sleep.sleepUntil(random(500, 700));
-
-        new ConditionalSleep(33000, 3000) {
+        new ConditionalSleep(33000, 1000) {
             @Override
-            public boolean condition() throws InterruptedException {
-                RS2Widget compostWidget = getWidgets().get(270, 14);
+            public boolean condition() {
+                while (getDialogues().isPendingContinuation()) {
+                    getDialogues().clickContinue();
+                    return true;
+                }
                 return !getInventory().contains("Supercompost") ||
-                        !getInventory().contains("Volcanic ash") ||
-                        (compostWidget != null && compostWidget.isVisible());
+                        !getInventory().contains("Volcanic ash");
+
             }
         }.sleep();
         log("the end");

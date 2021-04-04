@@ -20,6 +20,7 @@ public class DruidicRitual extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("ritual deda");
 
         return getInventory().contains("Raw bear meat") &&
                 getInventory().contains("Raw rat meat") &&
@@ -160,7 +161,12 @@ public class DruidicRitual extends Task {
     private void boilMeat() {
         getCombat().toggleAutoRetaliate(false);
 
-        while (!cauldronArea.contains(myPosition())) getWalking().webWalk(cauldronArea);
+        while (!cauldronArea.contains(myPosition())) {
+            getWalking().webWalk(cauldronArea);
+            if (getObjects().closest("Prison door") != null) {
+                getObjects().closest("Prison door").interact();
+            }
+        }
 
         RS2Object cauldron = getObjects().closest("Cauldron of Thunder");
 

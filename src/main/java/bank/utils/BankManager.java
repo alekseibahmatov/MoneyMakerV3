@@ -8,11 +8,14 @@ import org.osbot.rs07.api.model.RS2Object;
 import org.osbot.rs07.script.MethodProvider;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.utility.ConditionalSleep;
+import utils.Sleep;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class BankManager extends MethodProvider {
+
+    private boolean benis = false;
 
     public void openBank() {
 
@@ -42,8 +45,6 @@ public class BankManager extends MethodProvider {
 
 
         if (getWalking().webWalk(banks)) {
-
-            log("FUCK123");
 
             if (getBank().isOpen()) return;
 
@@ -83,8 +84,19 @@ public class BankManager extends MethodProvider {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            benis = true;
         } else {
+            Sleep.sleepUntil(random(1500, 2500));
+            log("Walking to bank");
+            benis = true;
             openBank();
         }
+
+        new ConditionalSleep(100000, 5000) {
+            @Override
+            public boolean condition() throws InterruptedException {
+                return benis;
+            }
+        }.sleep();
     }
 }

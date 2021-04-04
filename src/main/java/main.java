@@ -11,7 +11,6 @@ import activities.MakingTarrominPotions.MakingTarrominPotions;
 import activities.MakingUltracompost.MakingUltracompost;
 import activities.SpinningFlax.SpinningFlax;
 import activities.UncornHornGrinder.UnicornHornGrinder;
-import activities.WineOfZamorak.TrainingHp;
 import activities.WineOfZamorak.TrainingMagic;
 import activities.WineOfZamorak.WineOfZamorak;
 import activities.setup.Task;
@@ -23,34 +22,25 @@ import grandExchange.buy.GetBuyItems;
 import grandExchange.sell.GetSellItems;
 import grandExchange.utils.GrandExchangeManager;
 import models.TaskData;
-import org.osbot.Constants;
 import org.osbot.rs07.api.Chatbox;
 import org.osbot.rs07.api.map.Area;
-import org.osbot.rs07.api.map.Position;
 import org.osbot.rs07.api.map.constants.Banks;
 import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.api.ui.Skill;
+import org.osbot.rs07.api.ui.Tab;
 import org.osbot.rs07.script.Script;
 import org.osbot.rs07.script.ScriptManifest;
 import org.osbot.rs07.utility.ConditionalSleep;
-import utils.Config;
-import utils.CustomBreakManager;
-import utils.HouseValidation;
-import utils.Sleep;
+import utils.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.FontRenderContext;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.stream.Stream;
 
 @ScriptManifest(version = 0.1, author = "Z3Die", name = "Ultimate money maker V3", info = "Does a lot of activities to earn gold", logo = "")
 public class main extends Script {
@@ -79,7 +69,6 @@ public class main extends Script {
     private SpinningFlax spinningFlax = new SpinningFlax();
 
     private TrainingMagic trainingMagic = new TrainingMagic();
-    private TrainingHp trainingHp = new TrainingHp();
     private WineOfZamorak wineOfZamorak = new WineOfZamorak();
 
 
@@ -88,6 +77,7 @@ public class main extends Script {
     private CustomBreakManager customBreakManager = new CustomBreakManager();
     private Config config = new Config();
     private HouseValidation houseValidation = new HouseValidation();
+    private Hopper hopper = new Hopper();
 
     // Banking initialization
 
@@ -102,11 +92,10 @@ public class main extends Script {
     private GetBuyItems getBuyItems = new GetBuyItems();
     private GetSellItems getSellItems = new GetSellItems();
 
-
     private String timeOffset;
 
     private int taskID = -1, taskParam, prevTaskID;
-    private boolean firstLoop;
+    private boolean firstLoop = true;
 
     private boolean isBreaking;
     private long breakingUntil, untilBreak;
@@ -121,12 +110,14 @@ public class main extends Script {
     private long taskUntil, sleepUntil;
     private TaskData task;
 
+    private boolean changingTask;
+
     //------------Essentials---------------
     //Font size & Text Padding will determine the size of paint
     //Look at forum for examples
     final int baseFontSize = 14; //Recommended 12-20
     final int textPadding = 5; //space between text,columns, & rows
-    final String title = "DylanSRT Paint Demo"; //add script name here
+    final String title = "MoneyMaker V3"; //add script name here
     final boolean warningEnabled = true; //Warning window pops up on paint if a player says one of the keywords, Make sure public chat is visible
     final String[] warningChatKeywords = {"bot", "botting", "report", "reported", "Botting", "Bot", "Report", "Reported"};
 
@@ -137,13 +128,13 @@ public class main extends Script {
     //------------Cosmetics---------------
     final float paintTransparency = 0.60F; // 0.00F is transparent, 1.00F is opaque
     final Color textColor = new Color(255, 255, 255);
-    final Color paintOutlineColor = new Color(0, 0, 0);
+    final Color paintOutlineColor = new Color(86, 0, 147);
     final Color paintFillColor = new Color(0, 0, 0);
-    final Color captionColor = new Color(139, 0, 0);
+    final Color captionColor = new Color(255, 255, 255);
     final Color dividerColor = new Color(169, 169, 169);
     final Color progressBarFillColor = new Color(139, 0, 0);
     final Color progressBarOutlineColor = new Color(139, 0, 0);
-    final Color warningColor = new Color(139, 0, 0);
+    final Color warningColor = new Color(255, 2, 2);
     final String fontStyle = "SansSerif";
     private final Font baseFont = new Font(fontStyle, Font.PLAIN, baseFontSize);
     private final Font boldFont = new Font(fontStyle, Font.BOLD, baseFontSize);
@@ -151,7 +142,7 @@ public class main extends Script {
 
     int skillsRowLength, titlePaintLength, rowHeight, skillsPaintHeight, titlePaintHeight, skillsPaintX, titlePaintX, skillsPaintY,
             titlePaintY, lengthC1, lengthC2, lengthC3, lengthC4, lengthC5, lengthC6, lengthDivide, lengthHide, lengthReset,
-            titleRowHeight,l;
+            titleRowHeight, l;
     int[] rowY;
     int[] xpForLevels = {0, 83, 174, 276, 388, 512, 650, 801, 969, 1154,
             1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523, 3973, 4470,
@@ -193,6 +184,7 @@ public class main extends Script {
 
     @Override
     public void onStart() {
+        log("/");
 
         // Activities initialization
 
@@ -210,14 +202,12 @@ public class main extends Script {
         tarrominPotions.exchangeContext(getBot());
         spinningFlax.exchangeContext(getBot());
         trainingMagic.exchangeContext(getBot());
-        trainingHp.exchangeContext(getBot());
         wineOfZamorak.exchangeContext(getBot());
 
         tasks.add(unicornHornGrinder);
         tasks.add(grindingDesertGoatHorns);
         tasks.add(cuttingOpals);
         tasks.add(ultracompost);
-        tasks.add(hasHouse);
         tasks.add(collectingPlanks);
         tasks.add(guamPotions);
         tasks.add(herbloreBelow12Lvl);
@@ -228,6 +218,7 @@ public class main extends Script {
         // Utilities initialization
 
         customBreakManager.exchangeContext(getBot());
+        hopper.exchangeContext(getBot());
         getBot().getRandomExecutor().overrideOSBotRandom(customBreakManager);
         config.exchangeContext(getBot());
         houseValidation.exchangeContext(getBot());
@@ -260,20 +251,50 @@ public class main extends Script {
 
         isHouse = houseValidation.validate();
 
+        if (!getTabs().isOpen(Tab.SETTINGS)) {
+            getTabs().open(Tab.SETTINGS);
+            RS2Widget zoomScroll = getWidgets().get(116, 60);
+            RS2Widget mouseSettingTab = getWidgets().get(116, 69);
+            if (zoomScroll != null) {
+                getMouse().move(random(611, 620), 280);
+                Sleep.sleepUntil(random(300, 500));
+                getMouse().click(false);
+                log("zoomed mouse");
+            } else if (mouseSettingTab != null) mouseSettingTab.interact();
+        }
+
     }
 
     @Override
     public int onLoop() throws InterruptedException {
+        log("/loop");
+
 
         getBot().getCanvas().addMouseListener(listener);
 
         if (!isBreaking) {
             if (taskID == -1) taskManager();
 
+
+            new ConditionalSleep(60000, 1000) {
+                @Override
+                public boolean condition() {
+                    RS2Widget pizda = getWidgets().get(192, 1, 11);
+                    if (pizda != null && pizda.isVisible()) {
+                        pizda.interact();
+                    }
+                    return pizda == null;
+                }
+            }.sleep();
+
+            log("/1");
+
             if (firstLoop) {
                 if (tasks.get(taskID).isNeededToStartAtGE()) goToGrandExchange();
                 firstLoop = false;
+                log("/2");
             } else {
+                log("/3");
                 switch (taskID) {
                     case 0:
                         if (unicornHornGrinder.validate()) unicornHornGrinder.execute(taskParam);
@@ -316,39 +337,34 @@ public class main extends Script {
                             taskParam = 0;
                         }
                         break;
+//                    case 4:
+//                        if (isHouse && getSkills().getDynamic(Skill.CRAFTING) >= 49) {
+//                            if (hasHouse.validate()) hasHouse.execute(taskParam);
+//                            else {
+//                                taskID = -2;
+//                                prevTaskID = 4;
+//                                taskParam = 0;
+//                            }
+//                        } else {
+//                            if (noHouse.validate()) noHouse.execute(taskParam);
+//                            else {
+//                                taskID = -2;
+//                                prevTaskID = 4;
+//                                taskParam = 0;
+//                            }
+//                        }
+//                        break;
                     case 4:
-                        if (isHouse && getSkills().getDynamic(Skill.CRAFTING) >= 49) {
-                            if (hasHouse.validate()) hasHouse.execute(taskParam);
-                            else {
-                                taskID = -2;
-                                prevTaskID = 4;
-                                taskParam = 0;
-                            }
-                        } else {
-                            if (noHouse.validate()) noHouse.execute(taskParam);
-                            else {
-                                taskID = -2;
-                                prevTaskID = 4;
-                                taskParam = 0;
-                            }
-                        }
-                        break;
-                    case 5:
                         if (collectingPlanks.validate()) collectingPlanks.execute(taskParam);
                         else {
-                            if ((getInventory().contains("Ring of wealth (5)") ||
-                                    getInventory().contains("Ring of wealth (4)") ||
-                                    getInventory().contains("Ring of wealth (3)") ||
-                                    getInventory().contains("Ring of wealth (2)") ||
-                                    getInventory().contains("Ring of wealth (1)")) &&
-                                    (getInventory().contains("Games necklace(8)") ||
-                                            getInventory().contains("Games necklace(7)") ||
-                                            getInventory().contains("Games necklace(6)") ||
-                                            getInventory().contains("Games necklace(5)") ||
-                                            getInventory().contains("Games necklace(4)") ||
-                                            getInventory().contains("Games necklace(3)") ||
-                                            getInventory().contains("Games necklace(2)") ||
-                                            getInventory().contains("Games necklace(1)"))) {
+                            if ((getInventory().contains("Games necklace(8)") ||
+                                    getInventory().contains("Games necklace(7)") ||
+                                    getInventory().contains("Games necklace(6)") ||
+                                    getInventory().contains("Games necklace(5)") ||
+                                    getInventory().contains("Games necklace(4)") ||
+                                    getInventory().contains("Games necklace(3)") ||
+                                    getInventory().contains("Games necklace(2)") ||
+                                    getInventory().contains("Games necklace(1)"))) {
 
                                 String[] gamesNecklaces = {"Games necklace(1)", "Games necklace(2)", "Games necklace(3)", "Games necklace(4)", "Games necklace(5)", "Games necklace(6)", "Games necklace(7)", "Games necklace(8)"};
 
@@ -383,21 +399,38 @@ public class main extends Script {
                                 }.sleep();
                             } else {
                                 taskID = -2;
-                                prevTaskID = 5;
+                                prevTaskID = 4;
                                 taskParam = 0;
                             }
                         }
                         break;
-                    case 6:
+                    case 5:
                         if (getSkills().getDynamic(Skill.HERBLORE) >= 3) {
                             if (guamPotions.validate()) guamPotions.execute(taskParam);
+                            else {
+                                taskID = -2;
+                                prevTaskID = 5;
+                                taskParam = 0;
+                            }
+                        } else {
+                            if (druidicRitual.validate()) druidicRitual.execute(taskParam);
+                            else {
+                                taskID = -2;
+                                prevTaskID = 5;
+                                taskParam = 1;
+                            }
+                        }
+                        break;
+                    case 6:
+                        if (getSkills().getDynamic(Skill.HERBLORE) >= 12) {
+                            if (tarrominPotions.validate()) tarrominPotions.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 6;
                                 taskParam = 0;
                             }
                         } else {
-                            if (druidicRitual.validate()) druidicRitual.execute(taskParam);
+                            if (herbloreBelow12Lvl.validate()) herbloreBelow12Lvl.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 6;
@@ -406,15 +439,15 @@ public class main extends Script {
                         }
                         break;
                     case 7:
-                        if (getSkills().getDynamic(Skill.HERBLORE) >= 12) {
-                            if (tarrominPotions.validate()) tarrominPotions.execute(taskParam);
+                        if (getSkills().getDynamic(Skill.CRAFTING) >= 10) {
+                            if (spinningFlax.validate()) spinningFlax.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
                                 taskParam = 0;
                             }
                         } else {
-                            if (herbloreBelow12Lvl.validate()) herbloreBelow12Lvl.execute(taskParam);
+                            if (cuttingOpals.validate()) cuttingOpals.execute(taskParam);
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
@@ -423,29 +456,10 @@ public class main extends Script {
                         }
                         break;
                     case 8:
-                        if (getSkills().getDynamic(Skill.CRAFTING) >= 10) {
-                            if (spinningFlax.validate()) spinningFlax.execute(taskParam);
-                            else {
-                                taskID = -2;
-                                prevTaskID = 8;
-                                taskParam = 0;
-                            }
-                        } else {
-                            if (cuttingOpals.validate()) cuttingOpals.execute(taskParam);
-                            else {
-                                taskID = -2;
-                                prevTaskID = 8;
-                                taskParam = 0;
-                            }
-                        }
-                        break;
-                    case 9:
-                        if (trainingMagic.validate()) {
-                            trainingMagic.execute(taskParam);
-                        }
+                        if (trainingMagic.validate()) trainingMagic.execute(taskParam);
                         else {
                             taskID = -2;
-                            prevTaskID = 9;
+                            prevTaskID = 8;
                             taskParam = 0;
                         }
                         break;
@@ -470,7 +484,7 @@ public class main extends Script {
                         log("Case -2 started");
                         log("Getting items");
 
-                        int state = getItemsFromBank.getItems(prevTaskID, taskParam, bankManager);
+                        int state = getItemsFromBank.getItems(prevTaskID, taskParam, bankManager, changingTask);
 
                         if (state == -1) {
                             try {
@@ -484,19 +498,29 @@ public class main extends Script {
                             }
                         }
 
-                        if(taskUntil == -1) {
+                        changingTask = false;
+
+                        if (taskUntil == -1) {
+
+                            log("Ockohnik");
+
                             taskUntil = System.currentTimeMillis() / 1000 + task.getTaskDuration();
 
-                            taskID = task.getTaskID();
                         }
+
+                        taskID = task.getTaskID();
+                        taskParam = random(1, 2);
+
+                        taskManager();
                         break;
                 }
             }
         } else {
+            log("/5");
             taskManager();
         }
 
-        return 0;
+        return random(500, 700);
     }
 
     @Override
@@ -621,7 +645,7 @@ public class main extends Script {
                     titlePaintLength = (int) baseFont.getStringBounds(textTitlePaint.get(i), context).getWidth();
             }
             g2.setColor(captionColor);
-            String signature = "Created with DylanSRT Paint Template";
+            String signature = "Z3Die & G3R4M0N";
             g2.drawString(signature, getCenterX(titlePaintX + textPadding, titlePaintLength, signature, fmb), getCenterY(titlePaintY + titlePaintHeight - titleRowHeight, titleRowHeight - textPadding, fmBold) - titleRowHeight);
 
             //Check for an experience gain in any skill
@@ -766,6 +790,7 @@ public class main extends Script {
     private void goToGrandExchange() {
         if (!Banks.GRAND_EXCHANGE.contains(myPosition())) {
             bankManager.openBank();
+            log("/6");
 
             String ringOfWealth[] = "Ring of wealth (1),Ring of wealth (2),Ring of wealth (3),Ring of wealth (4),Ring of wealth (5)".split(",");
 
@@ -774,6 +799,7 @@ public class main extends Script {
             for (String ring : ringOfWealth) {
                 if (getInventory().contains(ring)) {
                     getBank().close();
+                    log("/7");
 
                     getInventory().getItem(ring).interact("Rub");
 
@@ -787,6 +813,8 @@ public class main extends Script {
 
                     break;
                 } else if (getBank().contains(ring)) {
+                    log("/8");
+
                     getBank().withdraw(ring, 1);
 
                     getBank().close();
@@ -806,20 +834,49 @@ public class main extends Script {
             }
 
             if (!isTeleportExists) {
-                Area GE = new Area(3169, 3488, 3161, 3486);
+                log("/9");
 
-                while (GE.contains(myPosition())) getWalking().webWalk(GE);
+                while (!getWalking().webWalk(Banks.GRAND_EXCHANGE)) ;
+                bankManager.openBank();
+                Sleep.sleepUntil(random(500, 1200));
+                getBank().depositAll();
+                Sleep.sleepUntil(random(500, 1200));
+                getBank().depositWornItems();
+
             }
+        } else {
+            bankManager.openBank();
+            Sleep.sleepUntil(random(500, 1200));
+            getBank().depositAll();
+            Sleep.sleepUntil(random(500, 1200));
+            getBank().depositWornItems();
         }
     }
 
     public void taskManager() {
-        if(System.currentTimeMillis() / 1000 > taskUntil || System.currentTimeMillis() / 1000 > sleepUntil) {
-            if(taskTotalCount < 14) {
-                if(tasksCountWithoutSleep < 3) {
-                    if(random(1, 3) > 1 || tasksCountWithoutSleep == 0) {
-                        int taskID = random(9, 9); // 4
-                        int workDuration = random(1920, 2820);
+
+        if (System.currentTimeMillis() / 1000 > taskUntil || System.currentTimeMillis() / 1000 > sleepUntil) {
+            if (taskTotalCount < 20) {
+                if (tasksCountWithoutSleep < 3) {
+                    if (random(1, 3) > 1 || tasksCountWithoutSleep == 0) {
+
+                        int[][] timetable = {
+                                {1920, 2820},
+                                {1920, 2820},
+                                {1920, 2820},
+                                {1920, 2820},
+                                {3600, 5400},
+                                {1920, 2820},
+                                {1920, 2820},
+                                {3600, 5400},
+                                {3600, 5400},
+                        };
+
+                        int taskID = random(0, 8); // 4
+
+                        log("Task ID: " + taskID);
+
+                        int workDuration = random(timetable[taskID][0], timetable[taskID][1]);
                         //int taskParam; If suck some dick
                         task = new TaskData(taskID, 0, workDuration);
 
@@ -831,6 +888,8 @@ public class main extends Script {
                         ++taskTotalCount;
 
                         sleepUntil = Long.MAX_VALUE;
+
+                        changingTask = true;
 
                         isBreaking = false;
                     } else {
@@ -856,6 +915,8 @@ public class main extends Script {
                     taskUntil = Long.MAX_VALUE;
                 }
             } else {
+                log("/16");
+
                 taskTotalCount = 0;
 
                 taskID = -3;
@@ -878,8 +939,8 @@ public class main extends Script {
 //
 //            cal.add(Calendar.DAY_OF_MONTH, offset);
 //
-////            int random = random(-60, 60);
-////            cal.add(Calendar.MINUTE, random);
+//         int random = random(-60, 60);
+//            cal.add(Calendar.MINUTE, random);
 //
 //            int rand = random(4, 6);
 //

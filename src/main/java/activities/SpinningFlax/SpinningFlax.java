@@ -18,93 +18,62 @@ public class SpinningFlax extends Task {
 
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis spinning flex");
 
-        return lumbridgeBank.contains(myPosition());
+        return getInventory().contains("Flax");
     }
 
     @Override
     public void execute(int type) {
+        if (getBank().isOpen()) getBank().close();
+        if (getGrandExchange().isOpen()) getGrandExchange().close();
 
-    }
-
-    private void depositAll() {
-        log("depositin all");
-        if (!Banks.LUMBRIDGE_UPPER.contains(myPosition())) getWalking().webWalk(lumbridgeBank);
-        else {
-            if (!getBank().isOpen()) {
-                try {
-                    getBank().open();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                getBank().depositAll();
-                Sleep.sleepUntil(random(300, 500));
-            }
-        }
+        spinFlax();
     }
 
     private void spinFlax() {
-        log("spinning flax");
-        if (!getInventory().contains("Flax")) {
-            log("dont have enough flax");
-            if (Banks.LUMBRIDGE_UPPER.contains(myPlayer())) {
-                if (!getBank().isOpen()) {
-                    try {
-                        getBank().open();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    log("got full inventory of flax");
-                    getBank().withdrawAll("Flax");
+        while (!spinningWheelRoom.contains(myPosition())) getWalking().webWalk(spinningWheelRoom);
+
+        new ConditionalSleep(40000, 2000) {
+            @Override
+            public boolean condition() throws InterruptedException {
+                if (objects.closest("Spinning wheel") != null && objects.closest("Spinning wheel").isVisible()) {
+                    getCamera().toEntity(objects.closest("Spinning wheel"));
                     Sleep.sleepUntil(random(300, 500));
-                }
-            }
-        }
-        if (!spinningWheelRoom.contains(myPosition())) {
-            getWalking().webWalk(spinningWheelRoom);
-
-            if (spinningWheelRoom.contains(myPosition())) {
-                RS2Object spinningWheel = objects.closest("Spinning wheel");
-
-                if (spinningWheel != null && spinningWheel.isVisible()) spinningWheel.interact();
-
-                new ConditionalSleep(10000, 1000) {
-                    @Override
-                    public boolean condition() throws InterruptedException {
-                        log("sleep until see spinWidget");
-                        RS2Object spinningWheel = objects.closest("Spinning wheel");
-                        if (spinningWheel != null && spinningWheel.isVisible()) spinningWheel.interact();
-                        RS2Widget spinWidget = getWidgets().get(270, 16, 38);
-                        return (spinWidget != null && spinWidget.isVisible());
+                    objects.closest("Spinning wheel").interact();
+                    Sleep.sleepUntil(random(300, 500));
+                    if (getWidgets().get(270, 16, 38) != null && getWidgets().get(270, 16, 38).isVisible()) {
+                        getWidgets().get(270, 16, 38).interact();
+                        log("started interactions");
+                        return true;
                     }
-                }.sleep();
-
-                RS2Widget spinWidget = getWidgets().get(270, 16, 38);
-                if (spinWidget != null && spinWidget.isVisible()) {
-                    spinWidget.interact();
+                } else {
+                    getCamera().moveYaw(random(160, 216));
+                    Sleep.sleepUntil(random(300, 500));
+                    getCamera().movePitch(random(53, 67));
+                    log("moved camera");
                 }
-
-                new ConditionalSleep(60000, 1000) {
-                    @Override
-                    public boolean condition() throws InterruptedException {
-                        log("sleep until finish spinning");
-                        RS2Widget fuckingDialog = getWidgets().get(217, 3);
-                        RS2Widget lvlUpWidget = getWidgets().get(233, 3);
-                        RS2Widget newAbilitiesWidget = getWidgets().get(11, 4);
-                        return (newAbilitiesWidget != null && newAbilitiesWidget.isVisible()) ||
-                                (lvlUpWidget != null && lvlUpWidget.isVisible()) ||
-                                (fuckingDialog != null && fuckingDialog.isVisible()) ||
-                                !getInventory().contains("Flax");
-                    }
-                }.sleep();
-
+                return false;
             }
-        }
+        }.sleep();
+
+        new ConditionalSleep(60000, 1000) {
+            @Override
+            public boolean condition() throws InterruptedException {
+                while (getDialogues().isPendingContinuation()) {
+                    getDialogues().clickContinue();
+                    return true;
+                }
+                return (!getInventory().contains("Flax") || myPlayer().isUnderAttack());
+            }
+        }.sleep();
+
+
     }
 }
