@@ -272,6 +272,8 @@ public class main extends Script {
 
         getBot().getCanvas().addMouseListener(listener);
 
+        log(isBreaking);
+
         if (!isBreaking) {
             if (taskID == -1) taskManager();
 
@@ -854,10 +856,10 @@ public class main extends Script {
     }
 
     public void taskManager() {
-
-        if (System.currentTimeMillis() / 1000 > taskUntil || System.currentTimeMillis() / 1000 > sleepUntil) {
+        log("TaskManager");
+        if ((System.currentTimeMillis() / 1000) > taskUntil || System.currentTimeMillis() > sleepUntil) {
             if (taskTotalCount < 20) {
-                if (tasksCountWithoutSleep < 3) {
+                if (tasksCountWithoutSleep < 1) {
                     if (random(1, 3) > 1 || tasksCountWithoutSleep == 0) {
 
                         int[][] timetable = {
@@ -871,6 +873,19 @@ public class main extends Script {
                                 {3600, 5400},
                                 {3600, 5400},
                         };
+
+//                        int[][] timetable = {
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                                {120, 180},
+//                        };
+
 
                         int taskID = random(0, 8); // 4
 
@@ -895,7 +910,12 @@ public class main extends Script {
                     } else {
                         tasksCountWithoutSleep = 0;
 
-                        sleepUntil = random(2880, 4200) + System.currentTimeMillis() / 1000;
+                        log("Going to sleep 1");
+
+                        sleepUntil = random(2880000, 4200000);
+//                        sleepUntil = random(120, 180) * 1000L + System.currentTimeMillis();
+
+                        log(sleepUntil);
 
                         customBreakManager.startBreaking(sleepUntil, true);
 
@@ -904,9 +924,15 @@ public class main extends Script {
                         taskUntil = Long.MAX_VALUE;
                     }
                 } else {
+
+                    log("Going to sleep 2");
+
                     tasksCountWithoutSleep = 0;
 
-                    sleepUntil = random(2880, 4200) + System.currentTimeMillis() / 1000;
+                    sleepUntil = random(2880000, 4200000);
+//                    sleepUntil = 60000;
+
+                    log(sleepUntil);
 
                     customBreakManager.startBreaking(sleepUntil, true);
 

@@ -30,11 +30,13 @@ public class CustomBreakManager extends RandomSolver {
     }
 
     public boolean finishedBreaking() {
+        log(System.currentTimeMillis() - breakStartTime + " >= " + breakDuration);
         return System.currentTimeMillis() - breakStartTime >= breakDuration;
     }
 
     @Override
     public int onLoop() throws InterruptedException {
+
         if (shouldLogout && getClient().getLoginState() == Client.LoginState.LOGIN_SUCCESSFUL) {
             if (getWidgets().closeOpenInterface() && getLogoutTab().logOut()) {
                 return 1000;

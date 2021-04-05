@@ -2,6 +2,7 @@ package bank;
 
 import bank.utils.BankManager;
 import models.TaskItem;
+import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.ui.EquipmentSlot;
 import org.osbot.rs07.api.ui.Tab;
 import org.osbot.rs07.script.MethodProvider;
@@ -60,7 +61,7 @@ public class GetItemsFromBank extends MethodProvider {
 //            },
             {
                     {
-                            new TaskItem("Games necklace(1),Games necklace(2),Games necklace(3),Games necklace(4),Games necklace(5),Games necklace(6),Games necklace(7),Games necklace(8)", 1, true, true),
+                            new TaskItem("Games necklace(1),Games necklace(2),Games necklace(3),Games necklace(4),Games necklace(5),Games necklace(6),Games necklace(7),Games necklace(8)", 1, true, true, true, new Area(2515, 3590, 2557, 3534)),
                             new TaskItem("Plank", true, false),
                     }
             },
@@ -156,7 +157,7 @@ public class GetItemsFromBank extends MethodProvider {
             else if (splittedItems.length > 1) {
                 boolean hasAtLeastOneOfListedItems = false;
                 for (String item : splittedItems) {
-                    if (getBank().contains(item) || getInventory().contains(item)) {
+                    if (getBank().contains(item) || getInventory().contains(item) || (taskItems[taskID][step][i].isUsedForTransporting() && taskItems[taskID][step][i].getArea().contains(myPosition()))) {
                         hasAtLeastOneOfListedItems = true;
                         break;
                     }
@@ -172,7 +173,7 @@ public class GetItemsFromBank extends MethodProvider {
                 getBank().withdraw(taskItems[taskID][step][i].getName(), taskItems[taskID][step][i].getAmount());
             else if (splittedItems.length > 1) {
                 for (String item : splittedItems) {
-                    if (!getInventory().contains(item) && getBank().contains(item) && taskItems[taskID][step][i].isNeededToBeTaken()) {
+                    if (!getInventory().contains(item) && getBank().contains(item) && taskItems[taskID][step][i].isNeededToBeTaken() && (taskItems[taskID][step][i].isUsedForTransporting() && !taskItems[taskID][step][i].getArea().contains(myPosition()))) {
                         getBank().withdraw(item, taskItems[taskID][step][i].getAmount());
                         break;
                     }

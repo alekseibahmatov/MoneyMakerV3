@@ -24,9 +24,7 @@ public class CollectingPlanks extends Task {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
         log("benis plank");
 
-        Area checkArea = new Area(2515, 3590, 2557, 3534);
-
-        return checkArea.contains(myPosition());
+        return !getInventory().isFull() && !myPlayer().isUnderAttack() && !getDialogues().inDialogue();
     }
 
     @Override
@@ -55,7 +53,6 @@ public class CollectingPlanks extends Task {
             }
         } else {
             if (!getInventory().isFull() && !getDialogues().inDialogue() && !myPlayer().isUnderAttack()) collectPlanks();
-            else depositPlanks();
         }
     }
 
