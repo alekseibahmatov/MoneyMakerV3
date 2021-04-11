@@ -18,6 +18,7 @@ public class PlayerNoHouse extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis has not hosue");
 
         return getInventory().contains("Falador teleport") &&
                 (getInventory().contains("Ring of wealth (5)") ||

@@ -9,13 +9,13 @@ import utils.Sleep;
 public class HerbloreBelow12Lvl extends Task {
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
-
+        log("benis check below 12 lvl hlebalo");
         return getInventory().contains("Guam potion (unf)") && getInventory().contains("Eye of newt");
     }
 

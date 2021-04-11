@@ -15,6 +15,7 @@ public class MakingGuamPotions extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("guam bear potions");
 
         return getInventory().contains("Guam leaf") && getInventory().contains("Vial of water");
     }

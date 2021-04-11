@@ -8,12 +8,13 @@ import utils.Sleep;
 public class UnicornHornGrinder extends Task {
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if(!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis 4lenolob unicorn");
 
         return getInventory().contains("Unicorn horn") && getInventory().contains("Pestle and Mortar");
     }

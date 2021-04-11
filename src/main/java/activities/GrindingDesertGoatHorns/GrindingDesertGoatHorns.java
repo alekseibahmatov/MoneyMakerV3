@@ -14,6 +14,7 @@ public class GrindingDesertGoatHorns extends Task {
     @Override
     public boolean validate() {
         if(!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("goat fuk 123");
 
         return getInventory().contains("Desert goat horn") && getInventory().contains("Pestle and mortar");
     }

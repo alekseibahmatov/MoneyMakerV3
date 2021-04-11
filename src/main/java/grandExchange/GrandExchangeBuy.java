@@ -6,6 +6,8 @@ import models.BuyItem;
 import models.GrandExchangeBoxState;
 import org.osbot.rs07.api.GrandExchange;
 import org.osbot.rs07.api.map.Area;
+import org.osbot.rs07.api.map.constants.Banks;
+import org.osbot.rs07.api.ui.RS2Widget;
 import org.osbot.rs07.script.MethodProvider;
 import bank.utils.BankManager;
 import utils.Sleep;
@@ -56,18 +58,81 @@ public class GrandExchangeBuy extends MethodProvider {
         List<BuyItem> items = null;
 
         while (true) {
-            if (!grandExchangeArea.contains(myPosition())) getWalking().webWalk(grandExchangeArea);
-            else {
+            log("0");
+
+            if (!Banks.GRAND_EXCHANGE.contains(myPosition())) {
+                log("Running to grand exchange");
+
+                bankManager.openBank();
+
+                String ringOfWealth[] = "Ring of wealth (1),Ring of wealth (2),Ring of wealth (3),Ring of wealth (4),Ring of wealth (5)".split(",");
+
+                log("1");
+                boolean isTeleportExists = false;
+
+                for (String ring : ringOfWealth) {
+                    if (getInventory().contains(ring)) {
+                        getBank().close();
+                        log("2");
+
+                        getInventory().getItem(ring).interact("Rub");
+
+                        Sleep.sleepUntil(() -> getWidgets().get(219, 1, 2) != null && getWidgets().get(219, 1, 2).isVisible(), 5000, 500);
+
+                        RS2Widget RoW = getWidgets().get(219, 1, 2);
+
+                        RoW.interact();
+
+                        isTeleportExists = true;
+
+                        break;
+                    } else if (getBank().contains(ring)) {
+                        log("3");
+
+                        getBank().withdraw(ring, 1);
+
+                        getBank().close();
+
+                        getInventory().getItem(ring).interact("Rub");
+
+                        Sleep.sleepUntil(() -> getWidgets().get(219, 1, 2) != null && getWidgets().get(219, 1, 2).isVisible(), 5000, 500);
+
+                        RS2Widget RoW = getWidgets().get(219, 1, 2);
+
+                        RoW.interact();
+
+                        isTeleportExists = true;
+
+                        break;
+                    }
+                }
+
+                if (!isTeleportExists) {
+                    log("4");
+
+                    getBank().close();
+
+                    Area GE = new Area(3169, 3488, 3161, 3486);
+
+                    while (!GE.contains(myPosition())) getWalking().webWalk(GE);
+                }
+            } else {
+                log("5");
+
                 List<GrandExchangeBoxState> grandExchangeBoxStates = new ArrayList<>();
 
                 currentBoxID = -1;
 
                 if (state > 2) {
+                    log("6");
+
                     log("Analyzing grand exchange");
                     for (int i = 0; i < 8; i++) {
                         String status = getGrandExchange().getStatus(boxes[i]).toString();
 
                         if (status.equals("PENDING_BUY") || status.equals("COMPLETING_BUY") || status.equals("FINISHED_BUY")) {
+                            log("7");
+
                             GrandExchangeBoxState newState = new GrandExchangeBoxState();
 
                             newState.setStatus(status);
@@ -80,14 +145,23 @@ public class GrandExchangeBuy extends MethodProvider {
                 }
 
                 if (state == 1) {
+                    log("State 1");
+                    log("8");
+
                     log("Getting coins from bank");
                     bankManager.openBank();
 
-                    if (!getInventory().isEmpty()) getBank().depositAll();
+                    if (!getInventory().isEmpty()) {
+                        log("9");
+                        getBank().depositAll();
+
+                    }
 
                     items = getBuyItems.getItems(taskID, step, getBank());
 
                     if (getBank().contains("Coins")) {
+                        log("9");
+
 
                         log("Bank has coins");
 
@@ -96,13 +170,19 @@ public class GrandExchangeBuy extends MethodProvider {
                         goldAvailable = getBank().getAmount("Coins");
 
                         for (BuyItem item : items) {
+                            log("10");
+
                             goldTotalNeeded += (long) item.getAmount() * item.getPrice();
                         }
 
                         log("Total coins needed: " + goldTotalNeeded);
 
-                        if (goldAvailable < goldTotalNeeded * 1.1) return -1; // Not enough money
-                        else {
+                        if (goldAvailable < goldTotalNeeded * 1.1) {
+                            log("11");
+                            return -1; // Not enough money
+                        } else {
+                            log("12");
+
 
                             log("Bank has enough coins");
 
@@ -117,9 +197,13 @@ public class GrandExchangeBuy extends MethodProvider {
                             sleep(random(300, 500));
                         }
                     } else {
+                        log("13");
+
                         return -2; // Your bank account does not have money at all
                     }
                 } else if (state == 2) {
+                    log("14");
+
                     log("Buying items");
 
                     grandExchangeManager.openGE();
@@ -127,6 +211,7 @@ public class GrandExchangeBuy extends MethodProvider {
                     sleep(random(300, 500));
 
                     for (BuyItem item : items) {
+
                         getGrandExchange().buyItem(item.getId(), item.getSearchTerm(), item.getPrice(), item.getAmount());
 
                         sleep(random(300, 500));
@@ -134,18 +219,30 @@ public class GrandExchangeBuy extends MethodProvider {
 
                     state = 3;
                 } else if (state == 3) {
+                    log("15");
+
                     log("Checking item count");
                     checkBoxes(grandExchangeBoxStates);
 
                     if (items.size() != 0 && currentBoxID != -1) {
+                        log("16");
+
                         log("Items exists");
                         log(getGrandExchange().getStatus(boxes[currentBoxID]).toString());
                         Sleep.sleepUntil(() -> getGrandExchange().getStatus(boxes[currentBoxID]) == GrandExchange.Status.FINISHED_BUY, random(10000, 25000), 500);
-                    } else state = 6;
+                    } else {
+                        log("17");
+                        state = 6;
+                    }
                 } else if (state == 4) {
+
+                    log("18");
+
                     log("Checking state 4");
                     checkBoxes(grandExchangeBoxStates);
                     if (state == 4) {
+                        log("19");
+
 
                         log("Checking state 4 is done");
 
