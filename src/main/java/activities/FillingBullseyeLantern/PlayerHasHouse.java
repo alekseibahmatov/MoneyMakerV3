@@ -18,6 +18,7 @@ public class PlayerHasHouse extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis has hosue");
 
         return getInventory().contains("Bullseye lantern (empty)") &&
                 getInventory().contains("Swamp tar") &&

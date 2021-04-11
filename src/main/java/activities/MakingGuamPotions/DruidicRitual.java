@@ -20,6 +20,7 @@ public class DruidicRitual extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("ritual deda");
 
         return getInventory().contains("Raw bear meat") &&
                 getInventory().contains("Raw rat meat") &&
@@ -42,6 +43,8 @@ public class DruidicRitual extends Task {
         if (getBank().isOpen()) getBank().close();
         else if (getGrandExchange().isOpen()) getGrandExchange().close();
 
+        if (getCombat().isAutoRetaliateOn()) getCombat().toggleAutoRetaliate(false);
+
         log("searching for kaqemeex");
         findKaqemeex();
 
@@ -49,13 +52,18 @@ public class DruidicRitual extends Task {
         dialogKaqemeexFirst();
 
         log("searching for sanfew");
-        findSanfew();
+        Sleep.sleepUntil(this::findSanfew, 100000, 1000);
 
-        log("started first dialog with kaqemeex");
+        Sleep.sleepUntil(random(1500, 3000));
+
+        log("started first dialog with sanfew");
         dialogSanfewFirst();
 
         log("going underground");
         goUnderground();
+
+        log("going to cauldron");
+        Sleep.sleepUntil(this::goToCauldron, 100000, 1000);
 
         log("boiling meat");
         boilMeat();
@@ -78,6 +86,17 @@ public class DruidicRitual extends Task {
         log("finish");
         getWidgets().closeOpenInterface();
 
+    }
+
+    private boolean goToCauldron() {
+        if (!cauldronArea.contains(myPosition())) {
+            getWalking().webWalk(cauldronArea);
+            if (getObjects().closest("Prison door") != null) {
+                getObjects().closest("Prison door").interact();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void findKaqemeex() {
@@ -125,16 +144,16 @@ public class DruidicRitual extends Task {
         }
     }
 
-    private void findSanfew() {
+    private boolean findSanfew() {
         while (!sanfewRoom.contains(myPosition())) getWalking().webWalk(sanfewRoom);
         NPC sanfew = getNpcs().closest("Sanfew");
         if (sanfew.isVisible() && sanfew != null) {
             getCamera().toEntity(sanfew);
             Sleep.sleepUntil(random(300, 500));
-            sanfew.interact();
-            while (getDialogues().inDialogue() == false) sanfew.interact();
+            while (!getDialogues().inDialogue()) sanfew.interact();
+            if (getDialogues().inDialogue()) return true;
         }
-        Sleep.sleepUntil(random(300, 500));
+        return false;
     }
 
     private void dialogSanfewFirst() {
@@ -158,31 +177,35 @@ public class DruidicRitual extends Task {
     }
 
     private void boilMeat() {
-        getCombat().toggleAutoRetaliate(false);
-
-        while (!cauldronArea.contains(myPosition())) getWalking().webWalk(cauldronArea);
 
         RS2Object cauldron = getObjects().closest("Cauldron of Thunder");
 
-        if (getInventory().contains("Raw bear meat")) getInventory().getItem("Raw bear meat").interact();
-        Sleep.sleepUntil(random(300, 500));
-        cauldron.interact();
-        Sleep.sleepUntil(random(300, 500));
+        Sleep.sleepUntil(random(1500, 3000));
 
-        if (getInventory().contains("Raw rat meat")) getInventory().getItem("Raw rat meat").interact();
-        Sleep.sleepUntil(random(300, 500));
-        cauldron.interact();
-        Sleep.sleepUntil(random(300, 500));
+        while (getInventory().contains("Raw bear meat") || getInventory().contains("Raw rat meat") || getInventory().contains("Raw beef") || getInventory().contains("Raw chicken")) {
+            if (getInventory().contains("Raw bear meat")) getInventory().getItem("Raw bear meat").interact();
+            Sleep.sleepUntil(random(300, 500));
+            cauldron.interact();
+            Sleep.sleepUntil(random(1500, 3000));
 
-        if (getInventory().contains("Raw beef")) getInventory().getItem("Raw beef").interact();
-        Sleep.sleepUntil(random(300, 500));
-        cauldron.interact();
-        Sleep.sleepUntil(random(300, 500));
 
-        if (getInventory().contains("Raw chicken")) getInventory().getItem("Raw chicken").interact();
-        Sleep.sleepUntil(random(300, 500));
-        cauldron.interact();
-        Sleep.sleepUntil(random(300, 500));
+            if (getInventory().contains("Raw rat meat")) getInventory().getItem("Raw rat meat").interact();
+            Sleep.sleepUntil(random(300, 500));
+            cauldron.interact();
+            Sleep.sleepUntil(random(1500, 3000));
+
+
+            if (getInventory().contains("Raw beef")) getInventory().getItem("Raw beef").interact();
+            Sleep.sleepUntil(random(300, 500));
+            cauldron.interact();
+            Sleep.sleepUntil(random(1500, 3000));
+
+
+            if (getInventory().contains("Raw chicken")) getInventory().getItem("Raw chicken").interact();
+            Sleep.sleepUntil(random(300, 500));
+            cauldron.interact();
+            Sleep.sleepUntil(random(1500, 3000));
+        }
     }
 
     private void goUpside() {

@@ -1,8 +1,6 @@
 package activities.WineOfZamorak;
 
 import activities.setup.Task;
-import org.osbot.Sk;
-import org.osbot.rs07.api.filter.Filter;
 import org.osbot.rs07.api.model.NPC;
 import org.osbot.rs07.api.ui.*;
 import org.osbot.rs07.api.map.Area;
@@ -22,12 +20,13 @@ public class TrainingMagic extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis trening mogek");
 
-        return (getInventory().contains("Mind rune") && getInventory().getItem("Mind rune").getAmount() > 10) &&
-                (getInventory().contains("Water rune") && getInventory().getItem("Water rune").getAmount() > 10) &&
-                (getInventory().contains("Earth rune") && getInventory().getItem("Earth rune").getAmount() > 10) &&
-                (getInventory().contains("Fire rune") && getInventory().getItem("Fire rune").getAmount() > 10) &&
-                (getInventory().contains("Chaos rune") && getInventory().getItem("Chaos rune").getAmount() > 10) &&
+        return (getInventory().contains("Mind rune") && getInventory().getItem("Mind rune").getAmount() > random(9, 16)) &&
+                (getInventory().contains("Water rune") && getInventory().getItem("Water rune").getAmount() > random(9, 16)) &&
+                (getInventory().contains("Earth rune") && getInventory().getItem("Earth rune").getAmount() > random(9, 16)) &&
+                (getInventory().contains("Fire rune") && getInventory().getItem("Fire rune").getAmount() > random(9, 16)) &&
+                (getInventory().contains("Chaos rune") && getInventory().getItem("Chaos rune").getAmount() > random(9, 16)) &&
                 getInventory().contains("Tuna") &&
                 ((getEquipment().contains("Wooden shield") && getEquipment().contains("Staff of air")) ||
                         (getInventory().contains("Wooden shield") && getInventory().contains("Staff of air")));
@@ -133,8 +132,15 @@ public class TrainingMagic extends Task {
         NPC cow = getNpcs().closest("Cow");
 
         log("casted spell:" + selectedSpell);
+        if (getSkills().getDynamic(Skill.MAGIC) >= 35 && selectedSpell != 7) {
+            openSpellMenu();
+            RS2Widget lvl35Spell = getWidgets().get(201, 1, 8);
+            lvl35Spell.interact();
 
-        if (getSkills().getDynamic(Skill.MAGIC) >= 29 && selectedSpell != 6) {
+            Sleep.sleepUntil(random(500, 750));
+            getMagic().castSpellOnEntity(Spells.NormalSpells.FIRE_BOLT, cow);
+            selectedSpell = 7;
+        } else if (getSkills().getDynamic(Skill.MAGIC) >= 29 &&getSkills().getDynamic(Skill.MAGIC) <= 34 && selectedSpell != 6) {
             openSpellMenu();
             RS2Widget lvl29Spell = getWidgets().get(201, 1, 7);
             lvl29Spell.interact();
@@ -205,22 +211,6 @@ public class TrainingMagic extends Task {
         }
 
     }
-
-//    if (getMagic().canCast(Spells.NormalSpells.WIND_STRIKE)) {
-//        if (getMagic().canCast(Spells.NormalSpells.WATER_STRIKE)) {
-//            if (getMagic().canCast(Spells.NormalSpells.EARTH_STRIKE)) {
-//                if (getMagic().canCast(Spells.NormalSpells.FIRE_STRIKE)) {
-//                    if (getMagic().canCast(Spells.NormalSpells.WIND_BOLT)) {
-//                        if (getMagic().canCast(Spells.NormalSpells.WATER_BOLT)) {
-//                            if (getMagic().canCast(Spells.NormalSpells.EARTH_BOLT)) {
-//                                analyzingMagicLvl();
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
 }
 

@@ -16,16 +16,15 @@ public class CollectingPlanks extends Task {
 
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis plank");
 
-        Area checkArea = new Area(2515, 3590, 2557, 3534);
-
-        return checkArea.contains(myPosition());
+        return !getInventory().isFull() && !myPlayer().isUnderAttack() && !getDialogues().inDialogue();
     }
 
     @Override
@@ -53,8 +52,7 @@ public class CollectingPlanks extends Task {
                 e.printStackTrace();
             }
         } else {
-            if (!getInventory().isFull()) collectPlanks();
-            else depositPlanks();
+            if (!getInventory().isFull() && !getDialogues().inDialogue() && !myPlayer().isUnderAttack()) collectPlanks();
         }
     }
 
@@ -103,14 +101,8 @@ public class CollectingPlanks extends Task {
             log("planks targeted");
 
             // collecting planks untill inventory is full
-            while (!getInventory().isFull()) {
+            while (!getInventory().isFull() && !getDialogues().inDialogue() && !myPlayer().isUnderAttack()) {
                 GroundItem plank = getGroundItems().closest("Plank");
-                // targeting dialog with pidaras kotorii herit vsju malinu
-                RS2Widget pidarasDialog = getWidgets().get(231, 3);
-                if (pidarasDialog != null && pidarasDialog.isVisible()) {
-                    log("targeted dialog with pidaras kotorii herit vsju malinu");
-                    break;
-                }
                 if (plank != null) {
                     if (!plank.isVisible()) {
                         getCamera().toEntity(plank);

@@ -14,6 +14,7 @@ public class GrindingLimestoneBricks extends Task {
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis limestone");
 
         return getInventory().contains("Chisel") && getInventory().contains("Limestone");
     }
@@ -22,16 +23,6 @@ public class GrindingLimestoneBricks extends Task {
     public void execute(int type) {
         if (getBank().isOpen()) getBank().close();
         else if (getGrandExchange().isOpen()) getGrandExchange().close();
-
-        new ConditionalSleep(60000, 250) {
-            @Override
-            public boolean condition() throws InterruptedException {
-                return !getBank().isOpen();
-            }
-        }.sleep();
-
-        log("bank closed");
-
 
         switch (type) {
             case 1:

@@ -9,12 +9,13 @@ import utils.Sleep;
 public class MakingTarrominPotions extends Task {
     @Override
     public boolean isNeededToStartAtGE() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean validate() {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
+        log("benis tamborine potions");
 
         return getInventory().contains("Tarromin") && getInventory().contains("Vial of water");
     }
