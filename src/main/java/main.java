@@ -14,6 +14,7 @@ import activities.UncornHornGrinder.UnicornHornGrinder;
 import activities.WineOfZamorak.TrainingMagic;
 import activities.WineOfZamorak.WineOfZamorak;
 import activities.setup.Task;
+import antiban.Antiban;
 import bank.GetItemsFromBank;
 import bank.utils.BankManager;
 import grandExchange.GrandExchangeBuy;
@@ -78,6 +79,7 @@ public class main extends Script {
     private Config config = new Config();
     private HouseValidation houseValidation = new HouseValidation();
     private Hopper hopper = new Hopper();
+    private Antiban antiban = new Antiban();
 
     // Banking initialization
 
@@ -222,6 +224,7 @@ public class main extends Script {
         getBot().getRandomExecutor().overrideOSBotRandom(customBreakManager);
         config.exchangeContext(getBot());
         houseValidation.exchangeContext(getBot());
+        antiban.exchangeContext(getBot());
 
         // Banking initialization
 
@@ -299,7 +302,10 @@ public class main extends Script {
                 log("/3");
                 switch (taskID) {
                     case 0:
-                        if (unicornHornGrinder.validate()) unicornHornGrinder.execute(taskParam);
+                        if (unicornHornGrinder.validate()) {
+                            antiban.randomMove();
+                            unicornHornGrinder.execute(taskParam);
+                        }
                         else {
                             taskID = -2;
                             prevTaskID = 0;
@@ -307,7 +313,10 @@ public class main extends Script {
                         }
                         break;
                     case 1:
-                        if (grindingDesertGoatHorns.validate()) grindingDesertGoatHorns.execute(taskParam);
+                        if (grindingDesertGoatHorns.validate()) {
+                            antiban.randomMove();
+                            grindingDesertGoatHorns.execute(taskParam);
+                        }
                         else {
                             taskID = -2;
                             prevTaskID = 1;
@@ -316,14 +325,20 @@ public class main extends Script {
                         break;
                     case 2:
                         if (getSkills().getDynamic(Skill.CRAFTING) >= 40) {
-                            if (limestoneBricks.validate()) limestoneBricks.execute(taskParam);
+                            if (limestoneBricks.validate()) {
+                                antiban.randomMove();
+                                limestoneBricks.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 2;
                                 taskParam = 1;
                             }
                         } else {
-                            if (cuttingOpals.validate()) cuttingOpals.execute(taskParam);
+                            if (cuttingOpals.validate()) {
+                                antiban.randomMove();
+                                cuttingOpals.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 2;
@@ -332,7 +347,10 @@ public class main extends Script {
                         }
                         break;
                     case 3:
-                        if (ultracompost.validate()) ultracompost.execute(taskParam);
+                        if (ultracompost.validate()) {
+                            antiban.randomMove();
+                            ultracompost.execute(taskParam);
+                        }
                         else {
                             taskID = -2;
                             prevTaskID = 3;
@@ -357,8 +375,12 @@ public class main extends Script {
 //                        }
 //                        break;
                     case 4:
-                        if (collectingPlanks.validate()) collectingPlanks.execute(taskParam);
+                        if (collectingPlanks.validate()) {
+                            antiban.randomMove();
+                            collectingPlanks.execute(taskParam);
+                        }
                         else {
+                            antiban.randomMove();
                             if ((getInventory().contains("Games necklace(8)") ||
                                     getInventory().contains("Games necklace(7)") ||
                                     getInventory().contains("Games necklace(6)") ||
@@ -408,14 +430,20 @@ public class main extends Script {
                         break;
                     case 5:
                         if (getSkills().getDynamic(Skill.HERBLORE) >= 3) {
-                            if (guamPotions.validate()) guamPotions.execute(taskParam);
+                            if (guamPotions.validate()) {
+                                antiban.randomMove();
+                                guamPotions.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 5;
                                 taskParam = 0;
                             }
                         } else {
-                            if (druidicRitual.validate()) druidicRitual.execute(taskParam);
+                            if (druidicRitual.validate()) {
+                                antiban.randomMove();
+                                druidicRitual.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 5;
@@ -425,14 +453,20 @@ public class main extends Script {
                         break;
                     case 6:
                         if (getSkills().getDynamic(Skill.HERBLORE) >= 12) {
-                            if (tarrominPotions.validate()) tarrominPotions.execute(taskParam);
+                            if (tarrominPotions.validate()) {
+                                antiban.randomMove();
+                                tarrominPotions.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 6;
                                 taskParam = 0;
                             }
                         } else {
-                            if (herbloreBelow12Lvl.validate()) herbloreBelow12Lvl.execute(taskParam);
+                            if (herbloreBelow12Lvl.validate()) {
+                                antiban.randomMove();
+                                herbloreBelow12Lvl.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 6;
@@ -442,14 +476,20 @@ public class main extends Script {
                         break;
                     case 7:
                         if (getSkills().getDynamic(Skill.CRAFTING) >= 10) {
-                            if (spinningFlax.validate()) spinningFlax.execute(taskParam);
+                            if (spinningFlax.validate()) {
+                                antiban.randomMove();
+                                spinningFlax.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
                                 taskParam = 0;
                             }
                         } else {
-                            if (cuttingOpals.validate()) cuttingOpals.execute(taskParam);
+                            if (cuttingOpals.validate()) {
+                                antiban.randomMove();
+                                cuttingOpals.execute(taskParam);
+                            }
                             else {
                                 taskID = -2;
                                 prevTaskID = 7;
@@ -458,7 +498,10 @@ public class main extends Script {
                         }
                         break;
                     case 8:
-                        if (trainingMagic.validate()) trainingMagic.execute(taskParam);
+                        if (trainingMagic.validate()) {
+                            antiban.randomMove();
+                            trainingMagic.execute(taskParam);
+                        }
                         else {
                             taskID = -2;
                             prevTaskID = 8;
@@ -859,7 +902,7 @@ public class main extends Script {
         log("TaskManager");
         if ((System.currentTimeMillis() / 1000) > taskUntil || System.currentTimeMillis() > sleepUntil) {
             if (taskTotalCount < 20) {
-                if (tasksCountWithoutSleep < 1) {
+                if (tasksCountWithoutSleep < 3) {
                     if (random(1, 3) > 1 || tasksCountWithoutSleep == 0) {
 
                         int[][] timetable = {
@@ -867,12 +910,24 @@ public class main extends Script {
                                 {1920, 2820},
                                 {1920, 2820},
                                 {1920, 2820},
-                                {3600, 5400},
+                                {2000, 3000},
                                 {1920, 2820},
                                 {1920, 2820},
-                                {3600, 5400},
-                                {3600, 5400},
+                                {2000, 3000},
+                                {2000, 3000}
                         };
+
+//                        int[][] timetable = {
+//                                {1920, 2820},
+//                                {1920, 2820},
+//                                {1920, 2820},
+//                                {1920, 2820},
+//                                {3600, 5400},
+//                                {1920, 2820},
+//                                {1920, 2820},
+//                                {3600, 5400},
+//                                {3600, 5400},
+//                        };
 
 //                        int[][] timetable = {
 //                                {120, 180},
@@ -885,9 +940,15 @@ public class main extends Script {
 //                                {120, 180},
 //                                {120, 180},
 //                        };
+//                      benis tasks
 
+                        int newTask = -1;
 
-                        int taskID = random(0, 8); // 4
+                        int lastHope[] = {4, 7};
+
+                        do {newTask = lastHope[random(0, 1)];} while (taskID == newTask);
+
+                        taskID = newTask;
 
                         log("Task ID: " + taskID);
 

@@ -16,29 +16,29 @@ public class GetBuyItems extends MethodProvider {
             {
                     {
                             new NeedToBuyItem("Pestle and mortar", 233, 1, 1, "Pestle and mortar"),
-                            new NeedToBuyItem("Unicorn horn", 237, random(476, 639), 1, "Unicorn horn"),
+                            new NeedToBuyItem("Unicorn horn", 237, random(476, 639), random(100, 200), "Unicorn horn"),
                     },
             },
             {
                     {
                             new NeedToBuyItem("Pestle and mortar", 233, 1, 1, "Pestle and mortar"),
-                            new NeedToBuyItem("Desert goat horn", 9735, random(429, 658), 1, "Desert goat horn"),
+                            new NeedToBuyItem("Desert goat horn", 9735, random(429, 658), random(100, 200), "Desert goat horn"),
                     },
             },
             {
                     {
                             new NeedToBuyItem("Chisel", 1755, 1, 1, "Chisel"),
-                            new NeedToBuyItem("Uncut opal", 1625, random(489, 672), 1, "Uncut opal"),
+                            new NeedToBuyItem("Uncut opal", 1625, random(489, 672), random(100, 200), "Uncut opal"),
                     },
                     {
                             new NeedToBuyItem("Chisel", 1755, 1, 1, "Chisel"),
-                            new NeedToBuyItem("Limestone", 3211, random(462, 592), 1, "Limestone"),
+                            new NeedToBuyItem("Limestone", 3211, random(462, 592), random(100, 200), "Limestone"),
                     },
             },
             {
                     {
-                            new NeedToBuyItem("Supercompost", 6034, random(455, 613), 1, "Supercompost"),
-                            new NeedToBuyItem("Volcanic ash", 21622, random(422, 666), 1, "Volcanic ash"),
+                            new NeedToBuyItem("Supercompost", 6034, random(455, 613), 11, "Supercompost"),
+                            new NeedToBuyItem("Volcanic ash", 21622, random(422, 666), 22, "Volcanic ash"),
                     },
             },
 //            {
@@ -83,11 +83,11 @@ public class GetBuyItems extends MethodProvider {
             },
             {
                     {
-                            new NeedToBuyItem("Flax", 1779, random(3124, 5451), 1, "Flax"),
+                            new NeedToBuyItem("Flax", 1779, random(3124, 5451), random(100, 200), "Flax"),
                     },
                     {
                             new NeedToBuyItem("Chisel", 1755, 1, 1, "Chisel"),
-                            new NeedToBuyItem("Uncut opal", 1625, random(422, 667), 1, "Uncut opal"),
+                            new NeedToBuyItem("Uncut opal", 1625, random(422, 667), random(100, 200), "Uncut opal"),
                     }
             },
             {

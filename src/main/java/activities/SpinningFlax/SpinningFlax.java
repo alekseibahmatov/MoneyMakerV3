@@ -26,7 +26,7 @@ public class SpinningFlax extends Task {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
         log("benis spinning flex");
 
-        return getInventory().contains("Flax");
+        return getInventory().contains("Flax") && !myPlayer().isUnderAttack();
     }
 
     @Override

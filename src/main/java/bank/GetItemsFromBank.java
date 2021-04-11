@@ -41,7 +41,7 @@ public class GetItemsFromBank extends MethodProvider {
                     {
                             new TaskItem("Supercompost", 27, true, true),
                             new TaskItem("Ultracompost", true, false),
-                            new TaskItem("Volcanic ash", 54, true, true),
+                            new TaskItem("Volcanic ash", 54, 22, true, true),
                     }
             },
 //            {

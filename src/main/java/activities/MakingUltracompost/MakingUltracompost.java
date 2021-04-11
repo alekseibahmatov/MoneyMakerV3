@@ -17,7 +17,7 @@ public class MakingUltracompost extends Task {
         if (!getTabs().getOpen().equals(Tab.INVENTORY)) getTabs().open(Tab.INVENTORY);
         log("benis ultra govno compost");
 
-        return getInventory().contains("Supercompost") && getInventory().contains("Volcanic ash");
+        return getInventory().contains("Supercompost") && (getInventory().contains("Volcanic ash") && getInventory().getAmount("Volcanic ash") > 1);
     }
 
     @Override
