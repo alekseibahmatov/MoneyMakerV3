@@ -2,7 +2,7 @@ package models;
 
 public class NeedToBuyItem {
     private String name, checkName;
-    private int itemID, itemQ, itemMinQ;
+    private int itemID, itemQ, itemMinQ, itemPrice;
 
     public NeedToBuyItem(String name, int itemID, int itemQ, int itemMinQ, String checkName) {
         this.name = name;
@@ -30,5 +30,13 @@ public class NeedToBuyItem {
 
     public int getItemMinQ() {
         return itemMinQ;
+    }
+
+    public int getItemPrice() {
+        return itemPrice;
+    }
+
+    public void setItemPrice(int itemPrice) {
+        this.itemPrice = itemPrice;
     }
 }

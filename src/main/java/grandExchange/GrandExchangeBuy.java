@@ -259,8 +259,7 @@ public class GrandExchangeBuy extends MethodProvider {
                         int id = getGrandExchange().getItemId(boxes[currentBoxID]);
                         int price = 0;
                         if (getGrandExchange().getItemPrice(boxes[currentBoxID]) < 1000) {
-                            price = items.get(index).getPrice() + 5;
-                            items.get(index).setPrice(price);
+                            price = getBuyItems.setItemPrice(taskID, step, id, random(7, 13));
                         }
 
                         int amount = getGrandExchange().getAmountRemaining(boxes[currentBoxID]);
