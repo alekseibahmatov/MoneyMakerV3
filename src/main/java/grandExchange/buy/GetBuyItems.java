@@ -124,9 +124,11 @@ public class GetBuyItems extends MethodProvider {
                 if (bank.getAmount(needToBuyItems[taskID][step][i].getName()) == 0 || bank.getAmount(needToBuyItems[taskID][step][i].getName()) < needToBuyItems[taskID][step][i].getItemMinQ()) {
                     BuyItem item = new BuyItem();
 
-                    int price = priceGuide.getPrice(needToBuyItems[taskID][step][i].getItemID()).get();
+                    int price = 0;
 
-                    item.setPrice(price);
+                    if(item.getPrice() != -1) item.setPrice(priceGuide.getPrice(needToBuyItems[taskID][step][i].getItemID()).get());
+
+                    item.setPrice(item.getPrice());
                     item.setAmount(needToBuyItems[taskID][step][i].getItemQ());
                     item.setId(needToBuyItems[taskID][step][i].getItemID());
                     item.setSearchTerm(needToBuyItems[taskID][step][i].getName().substring(0, random(needToBuyItems[taskID][step][i].getName().length() / 2, needToBuyItems[taskID][step][i].getName().length())));
@@ -146,9 +148,11 @@ public class GetBuyItems extends MethodProvider {
                 if (!exists) {
                     BuyItem item = new BuyItem();
 
-                    int price = priceGuide.getPrice(needToBuyItems[taskID][step][i].getItemID()).get();
+                    int price = 0;
 
-                    item.setPrice(price);
+                    if(item.getPrice() != -1) item.setPrice(priceGuide.getPrice(needToBuyItems[taskID][step][i].getItemID()).get());
+
+                    item.setPrice(item.getPrice());
                     item.setAmount(needToBuyItems[taskID][step][i].getItemQ());
                     item.setId(needToBuyItems[taskID][step][i].getItemID());
                     item.setSearchTerm(needToBuyItems[taskID][step][i].getName().substring(0, random(needToBuyItems[taskID][step][i].getName().length() / 2, needToBuyItems[taskID][step][i].getName().length())));
@@ -159,5 +163,35 @@ public class GetBuyItems extends MethodProvider {
         }
 
         return items;
+    }
+
+    public int setItemPrice(int taskID, int step, int itemID, int addToPrice) {
+        NeedToBuyItem[] items = needToBuyItems[taskID][step];
+
+        for (NeedToBuyItem item : items) {
+            if (item.getItemID() == itemID) {
+                int newPrice = item.getItemPrice() + addToPrice;
+                item.setItemPrice(newPrice);
+                return newPrice;
+            }
+        }
+        return -1;
+    }
+
+    public BuyItem getItem(int taskID, int step, int itemID) {
+        NeedToBuyItem[] items = needToBuyItems[taskID][step];
+        for (NeedToBuyItem item : items) {
+            if (item.getItemID() == itemID) {
+                BuyItem buyItem = new BuyItem();
+
+                buyItem.setPrice(item.getItemPrice());
+                buyItem.setAmount(item.getItemQ());
+                buyItem.setId(item.getItemID());
+                buyItem.setSearchTerm(item.getName().substring(0, random(item.getName().length() / 2, item.getName().length())));
+
+                return buyItem;
+            }
+        }
+        return null;
     }
 }

@@ -23,6 +23,7 @@ import grandExchange.buy.GetBuyItems;
 import grandExchange.sell.GetSellItems;
 import grandExchange.utils.GrandExchangeManager;
 import models.TaskData;
+import models.Timetable;
 import org.osbot.rs07.api.Chatbox;
 import org.osbot.rs07.api.map.Area;
 import org.osbot.rs07.api.map.constants.Banks;
@@ -107,6 +108,7 @@ public class main extends Script {
     private boolean isHouse;
 
     private List<Task> tasks = new ArrayList<>();
+    private List<TaskData> taskHistory = new ArrayList<>();
 
     private int tasksCountWithoutSleep = 0, taskTotalCount = 0;
     private long taskUntil, sleepUntil;
@@ -905,58 +907,47 @@ public class main extends Script {
                 if (tasksCountWithoutSleep < 3) {
                     if (random(1, 3) > 1 || tasksCountWithoutSleep == 0) {
 
-                        int[][] timetable = {
-                                {1920, 2820},
-                                {1920, 2820},
-                                {1920, 2820},
-                                {1920, 2820},
-                                {2000, 3000},
-                                {1920, 2820},
-                                {1920, 2820},
-                                {2000, 3000},
-                                {2000, 3000}
+                        Timetable[] timetable = {
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(2000, 3000, 4, 2),
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(1920, 2820, 2, 3),
+                                new Timetable(2000, 3000, 4, 1),
+                                new Timetable(2000, 3000, 4, 1),
                         };
 
-//                        int[][] timetable = {
-//                                {1920, 2820},
-//                                {1920, 2820},
-//                                {1920, 2820},
-//                                {1920, 2820},
-//                                {3600, 5400},
-//                                {1920, 2820},
-//                                {1920, 2820},
-//                                {3600, 5400},
-//                                {3600, 5400},
-//                        };
-
-//                        int[][] timetable = {
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                                {120, 180},
-//                        };
-//                      benis tasks
+                        boolean loop = true;
 
                         int newTask = -1;
 
-                        int lastHope[] = {4, 7};
+                        while (loop) {
+                            newTask = random(0, timetable.length - 1);
+                            int taskCount = 0;
+                            boolean allowed = true;
 
-                        do {newTask = lastHope[random(0, 1)];} while (taskID == newTask);
+                            for (int i = 0; i < taskHistory.size(); i++) {
+                                if(taskHistory.get(i).getTaskID() == newTask) ++taskCount;
+                                if(timetable[newTask].getMinIntervalBetweenSameTasks() < (i+1) && taskHistory.get(i).getTaskID() == newTask) allowed = false;
+                            }
+
+                            for (int i = 0; i < taskHistory.size(); i++) {
+                                if(taskCount == timetable[newTask].getMaxTasksPerDay()) break;
+                                else if(allowed) loop = false;
+                            }
+                        }
 
                         taskID = newTask;
 
-                        log("Task ID: " + taskID);
+                        log("Task ID: " + newTask);
 
-                        int workDuration = random(timetable[taskID][0], timetable[taskID][1]);
+                        int workDuration = random(timetable[newTask].getMinTime(), timetable[newTask].getMaxTime());
                         //int taskParam; If suck some dick
                         task = new TaskData(taskID, 0, workDuration);
 
-                        this.taskID = taskID;
+                        taskHistory.add(task);
 
                         taskUntil = -1;
 
@@ -1010,196 +1001,6 @@ public class main extends Script {
             }
         }
     }
-
-//    public void createTaskList(int offset) throws IOException {
-//        File file = new File(Constants.DATA_DIR + "\\Ultimate Money Maker V3\\tasks.txt");
-//        System.gc();
-//
-//        if (file.exists()) {
-//
-//            log("Creating task list");
-//
-//            String devidedTime[] = timeOffset.split(":");
-//
-//            GregorianCalendar now = new GregorianCalendar();
-//            GregorianCalendar cal = new GregorianCalendar(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH), Integer.parseInt(devidedTime[0]), Integer.parseInt(devidedTime[1]));
-//
-//            cal.add(Calendar.DAY_OF_MONTH, offset);
-//
-//         int random = random(-60, 60);
-//            cal.add(Calendar.MINUTE, random);
-//
-//            int rand = random(4, 6);
-//
-//            try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
-//                for (int i = 0; i < rand; i++) {
-//                    int randTask = random(9, 9); // Task cases
-//
-//                    int param = 0;
-//
-//                    if (randTask == 0 || randTask == 1 || randTask == 2) param = random(1, 2);
-//
-//                    int randMinutes = random(45, 120);
-//
-//                    long startSecs = cal.getTimeInMillis() / 1000;
-//
-//                    cal.add(Calendar.MINUTE, randMinutes);
-//
-//                    long endSecs = cal.getTimeInMillis() / 1000;
-//
-//                    br.write(String.format("%d;%d;%d;%d", randTask, param, startSecs, endSecs) + System.lineSeparator());
-//
-//                    int randSleep = random(30, 90);
-//
-//                    cal.add(Calendar.MINUTE, randSleep);
-//                }
-//            } catch (Exception e) {
-//                System.out.println(e);
-//            }
-//            if (now.after(cal)) {
-//                createTaskList(1);
-//            }
-//        } else {
-//            file.getParentFile().mkdirs();
-//            file.createNewFile();
-//        }
-//    }
-//
-//    public void selectTask() {
-//        File file = new File(Constants.DATA_DIR + "\\Ultimate Money Maker V3\\tasks.txt");
-//
-//        if (file.exists() && file.length() != 0) {
-//            GregorianCalendar now = new GregorianCalendar();
-//
-//            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-//
-//                long lineCount;
-//                try (Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)) {
-//                    lineCount = stream.count();
-//                }
-//
-//                boolean isNeededToRecreateFile = false;
-//
-//                for (int i = 0; i < lineCount; i++) {
-//                    String line = br.readLine();
-//
-//                    if (i + 1 == lineCount && line != null && Long.parseLong(line.split(";")[3]) < now.getTimeInMillis() / 1000)
-//                        isNeededToRecreateFile = true;
-//                    else continue;
-//                }
-//
-//                if (isNeededToRecreateFile) createTaskList(0);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            boolean deleteLine = false;
-//            String lastLine = "";
-//
-//            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-//
-//                String line = br.readLine();
-//
-//                String data[] = line.split(";");
-//
-//                long nowSecs = now.getTimeInMillis() / 1000;
-//
-//                log("Changing task");
-//
-//                if (nowSecs > Long.parseLong(data[2]) && nowSecs < Long.parseLong(data[3])) {
-//
-//                    taskID = Integer.parseInt(data[0]);
-//                    taskParam = Integer.parseInt(data[1]);
-//
-//                    untilBreak = Long.parseLong(data[3]);
-//
-//                    log(untilBreak);
-//                    log(System.currentTimeMillis());
-//
-//                    firstLoop = true;
-//
-//                    isBreaking = false;
-//                } else {
-//                    if (now.getTimeInMillis() / 1000 > Long.parseLong(data[3])) {
-//                        if ((lastLine = br.readLine()) == null) {
-//                            createTaskList(0);
-//                        } else deleteLine = true;
-//                    } else if (now.getTimeInMillis() / 1000 < Long.parseLong(data[2])) {
-//
-//                        if (Long.parseLong(data[2]) - now.getTimeInMillis() / 1000 < 6000) {
-//                            long sleepTimeSecs = (Long.parseLong(line.split(";")[2]) - (now.getTimeInMillis() / 1000)) * 1000;
-//
-//                            breakingUntil = nowSecs * 1000 + sleepTimeSecs;
-//
-//                            customBreakManager.startBreaking(sleepTimeSecs, true);
-//
-//                            isBreaking = true;
-//                        } else {
-//                            taskID = -3;
-//
-//                            long sleepTimeSecs = (Long.parseLong(line.split(";")[2]) - (now.getTimeInMillis() / 1000)) * 1000;
-//
-//                            breakingUntil = nowSecs * 1000 + sleepTimeSecs;
-//                        }
-//                    }
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (deleteLine) {
-//                deleteLine(Constants.DATA_DIR + "\\Ultimate Money Maker V3\\tasks.txt", 1, 1);
-//
-//                long sleepTimeSecs = ((now.getTimeInMillis() / 1000) - Long.parseLong(lastLine.split(";")[2])) * 1000;
-//
-//                long nowSecs = now.getTimeInMillis() / 1000;
-//
-//                breakingUntil = nowSecs * 1000 + sleepTimeSecs;
-//
-//                customBreakManager.startBreaking(sleepTimeSecs, true);
-//
-//                isBreaking = true;
-//            }
-//        } else {
-//            try {
-//                createTaskList(0);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    void deleteLine(String filename, int startline, int numlines) {
-//        try {
-//            BufferedReader br = new BufferedReader(new FileReader(filename));
-//
-//            //String buffer to store contents of the file
-//            StringBuffer sb = new StringBuffer("");
-//
-//            //Keep track of the line number
-//            int linenumber = 1;
-//            String line;
-//
-//            while ((line = br.readLine()) != null) {
-//                //Store each valid line in the string buffer
-//                if (linenumber < startline || linenumber >= startline + numlines)
-//                    sb.append(line + "\n");
-//                linenumber++;
-//            }
-//            if (startline + numlines > linenumber)
-//                System.out.println("End of file reached.");
-//            br.close();
-//
-//            FileWriter fw = new FileWriter(new File(filename));
-//            //Write entire string buffer into the file
-//            fw.write(sb.toString());
-//            fw.close();
-//        } catch (Exception e) {
-//            System.out.println("Something went horribly wrong: " + e.getMessage());
-//        }
-//    }
 
     MouseListener listener = new MouseListener() {
         @Override
